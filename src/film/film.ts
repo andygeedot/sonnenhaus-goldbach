@@ -126,7 +126,9 @@ function stream(pathId: string, color: string, kwhPerYear: number) {
   q("#streams").appendChild(g);
   [...g.children].forEach((s, i) => gsap.to(s, {
     motionPath: { path, align: path, alignOrigin: [.5, .5] },
-    duration: dur, repeat: -1, ease: "none", delay: -(i * dur) / n,
+    // alle mit negativer Verzögerung, auch das erste: sonst wartet es (Film pausiert am Startbildschirm) am Nullpunkt
+    // und taucht später neben seinem Weg auf – als Stromi, der aus dem Nichts fällt
+    duration: dur, repeat: -1, ease: "none", delay: -((i + .5) * dur) / n,
   }));
   return g;
 }
@@ -162,6 +164,7 @@ function setSay(text: string) {
 
 // ---------- Zeitleiste ----------
 const tl = gsap.timeline({ repeat: LOOP ? -1 : 0, defaults: { ease: "power2.inOut" }, onComplete: () => showEndButtons(true) });
+if (import.meta.env.DEV) (window as unknown as { tl: gsap.core.Timeline }).tl = tl;   // nur lokal: Zeitleiste zum Nachprüfen
 
 // Neuer Erzähl-Text: Der Kasten bleibt stehen, nur der Text blendet über und der Kasten wächst mit (kein Flackern)
 function cap(t: number, kick: string, text: string) {
@@ -355,7 +358,7 @@ for (let c = 0; c < 2; c++) {
     .to("#night", { opacity: .6, duration: 1.2 }, t + 3.6).to("#stars", { opacity: 1, duration: 1.2 }, t + 3.8)
     .to("#bfill", { scaleY: .15, duration: 3, ease: "sine.inOut" }, t + 3.8)
     .to("#sunnyFace .face", { scaleY: .5, duration: .3 }, t + 3.8)
-    .to(S.sun, { opacity: 1, duration: .4 }, t + 7.6).to(S.roof, { opacity: 1, duration: .4 }, t + 7).to(S.exp, { opacity: 1, duration: .4 }, t + 7);
+    .to(S.sun, { opacity: 1, duration: .4 }, t + 8.4).to(S.roof, { opacity: 1, duration: .4 }, t + 7).to(S.exp, { opacity: 1, duration: .4 }, t + 7);
 }
 say(90.2, "Mittags hüpfen wir in die Batterie …", 3, { keep: true });
 say(93.6, "… und abends helfen wir im Haus!", 3.2, { follow: true });
@@ -427,6 +430,14 @@ tl.to("#rain", { opacity: 0, duration: 1 }, W0 + 8.4).call(() => snd.stopLoop("r
   .to("#rainbow", { opacity: .85, duration: 1.2 }, W0 + 9.6).to("#rainbow", { opacity: 0, duration: 1 }, W0 + WD - .2);
 say(W0 + 9.8, "Und danach: ein Regenbogen!", 2.4);
 tl.set([sunCloud, expCloud], { opacity: 0 }, 0);
+
+// Sicherheitsnetz: Die Sonnen-Männchen starten an einem festen Punkt unter der Sonne. Steht die Sonne woanders
+// (Auf- und Untergang, Zeitraffer), wären sie Stromis aus dem Nichts – dann bleiben sie ausgeblendet.
+const sunPos = q("#wsunpos");
+gsap.ticker.add(() => {
+  const home = Math.abs(Number(gsap.getProperty(sunPos, "x")) - 1650) < 12 && Math.abs(Number(gsap.getProperty(sunPos, "y")) - 300) < 12;
+  for (const g of [S.sun, sunCloud]) if ((g.style.visibility !== "hidden") !== home) g.style.visibility = home ? "" : "hidden";
+});
 
 // ---- Abschluss: die größten Vorteile – demnächst ein E-Auto – MACH MIT! (Sonnenuntergang rückt dafür nach hinten) ----
 const B0 = 125.2 + WD, C0 = 131 + WD, CD = 27.6, E0 = B0 + 10, M0 = E0 + 10;
