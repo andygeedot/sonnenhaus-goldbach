@@ -14,20 +14,31 @@
 # Endstand des Vormonats im Attribut „last_period“. Genau den schickt die Automation am 1. um 00:15 (und zur Sicherheit
 # noch einmal um 12:00 – doppelt senden schadet nicht, der Monat wird einfach überschrieben).
 
+# unique_id: damit die Zähler unter Einstellungen → Entitäten auftauchen und dort bearbeitet werden können
 utility_meter:
   sonnenhaus_pv_monat:
+    name: Sonnenhaus PV Monat
+    unique_id: sonnenhaus_pv_monat
     source: sensor.stp_10000tl_20_total_yield
     cycle: monthly
   sonnenhaus_bezug_monat:
+    name: Sonnenhaus Bezug Monat
+    unique_id: sonnenhaus_bezug_monat
     source: sensor.sunny_home_manager_2_metering_total_absorbed
     cycle: monthly
   sonnenhaus_einspeisung_monat:
+    name: Sonnenhaus Einspeisung Monat
+    unique_id: sonnenhaus_einspeisung_monat
     source: sensor.sunny_home_manager_2_metering_total_yield
     cycle: monthly
   sonnenhaus_batterie_laden_monat:
+    name: Sonnenhaus Batterie Laden Monat
+    unique_id: sonnenhaus_batterie_laden_monat
     source: sensor.solarflow_2400_ac_aggr_charge
     cycle: monthly
   sonnenhaus_batterie_entladen_monat:
+    name: Sonnenhaus Batterie Entladen Monat
+    unique_id: sonnenhaus_batterie_entladen_monat
     source: sensor.solarflow_2400_ac_aggr_discharge
     cycle: monthly
 
