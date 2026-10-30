@@ -7,7 +7,8 @@
     --chip: #ffffff; --chip-on: #24303a; --chip-on-text: #ffffff;
     /* dunklere „Tinten“ für farbigen Text (Kontrast ≥ 4,5:1) */
     --heat-ink: #a84c1c; --leaf-ink: #2b7a4b; --focus: #1f6fd1; --band: #fdf0dd;
-    color-scheme: light;
+    /* „only“: Chrome auf Android soll die Seite nicht selbst abdunkeln (sein Auto-Dunkelmodus ließ das helle Haus im Bild verschwinden) */
+    color-scheme: only light;
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -35,6 +36,8 @@
   /* Kopfleiste: Jahr + Abschnitte */
   .sticky { position: sticky; top: 0; z-index: 6; margin-top: 16px; background: color-mix(in srgb, var(--bg) 90%, transparent);
     backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  /* Touch-Geräte: keine Unschärfe hinter der Leiste – über bewegten Bildern flackert sie auf Android */
+  @media (pointer: coarse) { .sticky { backdrop-filter: none; -webkit-backdrop-filter: none; background: var(--bg); } }
   .sticky .wrap { display: flex; flex-direction: column; gap: 4px; padding-top: 8px; padding-bottom: 6px; }
   .barrow { display: flex; align-items: center; gap: 10px; min-width: 0; }
   .sticky .lbl { font-weight: 800; font-size: 13px; color: var(--muted); flex: none; }
@@ -55,6 +58,7 @@
 
   /* Szene */
   .scenebox { position: relative; }
+  .scene { contain: paint; }
   .scene { width: 100%; height: auto; display: block; border-radius: 26px; margin-top: 8px; touch-action: manipulation; }
   .flow { fill: none; stroke-linecap: round; stroke-dasharray: 2 14; animation: dash 1.1s linear infinite; transition: stroke-width .5s; }
   .flow.rev { animation-direction: reverse; }

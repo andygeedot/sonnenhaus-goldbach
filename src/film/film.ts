@@ -45,10 +45,25 @@ gsap.to("#warmAir path", { y: 14, opacity: .2, duration: 1, repeat: -1, yoyo: tr
 gsap.to(".airIn, .airOut", { x: 22, duration: .8, repeat: -1, yoyo: true, ease: "sine.inOut" });
 // Sunny blinzelt ab und zu
 gsap.to("#sunnyFace .eye, #wsun .eye", { scaleY: .1, transformOrigin: "50% 50%", duration: .08, repeat: -1, yoyo: true, repeatDelay: 3.4 });
-// Regen fällt schräg
-qa(".drop").forEach((d, i) => gsap.fromTo(d, { y: -80 - (i % 13) * 85 }, { y: 1120, x: "-=60", duration: .7 + (i % 5) * .08, repeat: -1, ease: "none", delay: -(i % 9) * .1 }));
-// Schnee fällt
-qa(".flake").forEach((fl, i) => gsap.fromTo(fl, { y: -40 - (i % 9) * 110 }, { y: 1100, x: `+=${(i % 5) * 18 - 36}`, duration: 5 + (i % 7) * .6, repeat: -1, ease: "none", delay: -(i % 11) * .5 }));
+// Regen fällt schräg, Schnee rieselt – die Schleifen laufen nur, solange Regen bzw. Schnee zu sehen ist (siehe unten)
+const rainLoop = gsap.timeline({ paused: true }), snowLoop = gsap.timeline({ paused: true });
+qa(".drop").forEach((d, i) => rainLoop.add(gsap.fromTo(d, { y: -80 - (i % 13) * 85 }, { y: 1120, x: "-=60", duration: .7 + (i % 5) * .08, repeat: -1, ease: "none", delay: -(i % 9) * .1 }), 0));
+qa(".flake").forEach((fl, i) => snowLoop.add(gsap.fromTo(fl, { y: -40 - (i % 9) * 110 }, { y: 1100, x: `+=${(i % 5) * 18 - 36}`, duration: 5 + (i % 7) * .6, repeat: -1, ease: "none", delay: -(i % 11) * .5 }), 0));
+
+// Weniger Zeichenarbeit fürs Handy (sonst flackert es auf großen 120-Hz-Bildschirmen wie dem Galaxy Fold):
+// Ebenen mit Deckkraft 0 werden ganz ausgeblendet statt unsichtbar mitgezeichnet; Regen und Schnee stehen still, solange man sie nicht sieht.
+const fades = qa("#night, #stars, #rain, #snow, #snowRoof, #snowGround, #rainbow, #flash, #bolt");
+const loops = new Map<Element, gsap.core.Timeline>([[q("#rain"), rainLoop], [q("#snow"), snowLoop]]);
+gsap.ticker.add(() => {
+  for (const el of fades) {
+    const on = Number(gsap.getProperty(el, "opacity")) > 0.001;
+    if ((el.style.visibility !== "hidden") !== on) el.style.visibility = on ? "" : "hidden";
+    const loop = loops.get(el);
+    if (loop && loop.paused() === on) loop.paused(!on);
+  }
+});
+// Touch-Geräte: 30 Bilder pro Sekunde reichen für den Comic und halbieren (bei 120 Hz: vierteln) die Arbeit
+if (matchMedia("(pointer: coarse)").matches) gsap.ticker.fps(30);
 
 // Katzen: Schwanz wedelt, ab und zu blinzeln
 qa(".cat .ctail").forEach((t, i) => gsap.to(t, { rotation: 14, transformOrigin: "0% 100%", duration: 1.1 + i * .3, repeat: -1, yoyo: true, ease: "sine.inOut" }));
