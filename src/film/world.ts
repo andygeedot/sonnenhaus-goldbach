@@ -195,7 +195,8 @@ export function worldSvg(treeCount: number) {
     <line x1="2150" y1="900" x2="2150" y2="470"/><line x1="2090" y1="500" x2="2210" y2="500"/><line x1="2105" y1="550" x2="2195" y2="550"/>
     <line x1="2150" y1="600" x2="2100" y2="900"/><line x1="2150" y1="600" x2="2200" y2="900"/></g>
   <path id="wireHouse" d="M2090 500 Q1920 560 1735 640" fill="none" stroke="${INK}" stroke-width="5"/>
-  <path id="wireNb" d="M2210 500 Q2320 560 2430 700" fill="none" stroke="${INK}" stroke-width="5"/>
+  <!-- Freileitung vom Mast von Dachspitze zu Dachspitze über alle drei Nachbarhäuser (Spitzen: 2470/739, 2720/757, 2950/744) -->
+  <path id="wireNb" d="M2210 500 Q2330 640 2470 739 Q2595 800 2720 757 Q2835 800 2950 744" fill="none" stroke="${INK}" stroke-width="5"/>
 
   <!-- Nachbarn -->
   ${smallHouse(2470, .62, "#fdf3e1", "#d07a5e", "nw")}${smallHouse(2720, .55, "#eef2f7", "#8e6a9e", "nw")}${smallHouse(2950, .6, "#f8e7d0", "#5f8fb5", "nw")}
@@ -249,7 +250,7 @@ export function worldSvg(treeCount: number) {
     <path id="pGrid" d="M2150 470 Q1930 540 1735 640 Q1640 690 1560 780"/>
     <path id="pSun" d="M1610 380 Q1580 420 1530 480"/>
     <path id="pRoof" d="M1450 520 L1450 800"/>
-    <path id="pExp" d="M1735 640 Q1920 560 2090 500 L2210 500 Q2320 560 2440 700"/>
+    <path id="pExp" d="M1735 640 Q1920 560 2090 500 L2210 500 Q2330 640 2470 739 Q2595 800 2720 757 Q2835 800 2950 744"/>
     <path id="pBattIn" d="M1300 560 Q1210 600 1185 730"/>
     <path id="pBattOut" d="M1235 820 Q1300 790 1400 800"/>
   </g>
