@@ -1,0 +1,63 @@
+# Baut die Seite und veröffentlicht sie auf GitHub Pages.
+# Läuft bei jedem Push und wenn Home Assistant neue Monatswerte schickt (repository_dispatch „energy-month“).
+name: Seite bauen und veröffentlichen
+
+on:
+  push:
+    branches: [main]
+  repository_dispatch:
+    types: [energy-month]
+  workflow_dispatch:
+
+permissions:
+  contents: write   # Monatswerte in data/energy.json zurückschreiben
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Monatswerte von Home Assistant übernehmen
+        if: github.event_name == 'repository_dispatch'
+        env:
+          # als Umgebungsvariable, nie direkt ins Skript einsetzen
+          PAYLOAD: ${{ toJSON(github.event.client_payload) }}
+        run: node scripts/merge-month.mjs
+
+      - name: Daten sichern
+        if: github.event_name == 'repository_dispatch'
+        run: |
+          git config user.name "sonnenhaus-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/energy.json
+          git diff --cached --quiet || { git commit -m "Monatswerte aus Home Assistant"; git push; }
+
+      - run: npm test
+      - run: npm run build
+        env:
+          CI: true
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

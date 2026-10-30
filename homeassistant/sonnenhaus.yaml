@@ -1,0 +1,69 @@
+# Sonnenhaus: Home Assistant schickt jede Nacht die Monatswerte an GitHub.
+# Die Verbindung geht nur von Home Assistant nach außen – Home Assistant bleibt aus dem Internet unerreichbar.
+#
+# Einrichten:
+# 1. Diese Datei als Paket einbinden, in configuration.yaml:
+#      homeassistant:
+#        packages:
+#          sonnenhaus: !include homeassistant/sonnenhaus.yaml   (oder Datei nach /config/packages/ legen)
+# 2. Unten die fünf Quell-Sensoren eintragen (die Gesamtzähler aus dem Energie-Dashboard, „total_increasing“, kWh).
+# 3. In secrets.yaml den GitHub-Zugang eintragen (fein-granularer Token, nur dieses Repository, Recht „Contents: Read and write“):
+#      sonnenhaus_github_auth: "Bearer github_pat_…"
+# 4. Home Assistant neu starten, Automation einmal von Hand ausführen.
+
+utility_meter:
+  sonnenhaus_pv_monat:
+    source: sensor.ERSETZEN_pv_erzeugung_gesamt
+    cycle: monthly
+  sonnenhaus_bezug_monat:
+    source: sensor.ERSETZEN_netzbezug_gesamt
+    cycle: monthly
+  sonnenhaus_einspeisung_monat:
+    source: sensor.ERSETZEN_netzeinspeisung_gesamt
+    cycle: monthly
+  sonnenhaus_batterie_laden_monat:
+    source: sensor.ERSETZEN_zendure_geladen_gesamt
+    cycle: monthly
+  sonnenhaus_batterie_entladen_monat:
+    source: sensor.ERSETZEN_zendure_entladen_gesamt
+    cycle: monthly
+
+rest_command:
+  sonnenhaus_push:
+    url: "https://api.github.com/repos/andygeedot/sonnenhaus-goldbach/dispatches"
+    method: POST
+    headers:
+      Authorization: !secret sonnenhaus_github_auth
+      Accept: "application/vnd.github+json"
+      X-GitHub-Api-Version: "2022-11-28"
+    content_type: "application/json"
+    payload: >-
+      {"event_type": "energy-month", "client_payload": {
+        "year": {{ year }}, "month": {{ month }},
+        "pv": {{ pv }}, "imp": {{ imp }}, "exp": {{ exp }},
+        "battIn": {{ batt_in }}, "battOut": {{ batt_out }} }}
+
+automation:
+  - id: sonnenhaus_monatswerte_senden
+    alias: "Sonnenhaus – Monatswerte an die Website schicken"
+    description: "Kurz vor Mitternacht den Stand des laufenden Monats senden; GitHub baut die Seite dann neu."
+    triggers:
+      - trigger: time
+        at: "23:58:00"
+    conditions:
+      # nur senden, wenn die Zähler einen Wert haben (nach Neustart kurz „unknown“)
+      - condition: template
+        value_template: >
+          {{ states('sensor.sonnenhaus_pv_monat') | is_number
+             and states('sensor.sonnenhaus_bezug_monat') | is_number
+             and states('sensor.sonnenhaus_einspeisung_monat') | is_number }}
+    actions:
+      - action: rest_command.sonnenhaus_push
+        data:
+          year: "{{ now().year }}"
+          month: "{{ now().month }}"
+          pv: "{{ states('sensor.sonnenhaus_pv_monat') | float(0) | round(2) }}"
+          imp: "{{ states('sensor.sonnenhaus_bezug_monat') | float(0) | round(2) }}"
+          exp: "{{ states('sensor.sonnenhaus_einspeisung_monat') | float(0) | round(2) }}"
+          batt_in: "{{ states('sensor.sonnenhaus_batterie_laden_monat') | float(0) | round(2) }}"
+          batt_out: "{{ states('sensor.sonnenhaus_batterie_entladen_monat') | float(0) | round(2) }}"

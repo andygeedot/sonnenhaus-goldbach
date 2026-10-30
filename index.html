@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unser Sonnenhaus · Goldbach</title>
+<meta name="description" content="Wie ein 74-m²-Haus in Goldbach mit Solardach, Batterie und Wärmepumpe seine ganze Energie aus Strom deckt – mit echten Messwerten seit 2019, erklärt für Groß und Klein.">
+<meta name="theme-color" content="#fff8ee">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Unser Sonnenhaus in Goldbach">
+<meta property="og:description" content="Heizen, Kochen, Radeln – alles mit Strom, viel davon vom eigenen Dach. Echte Messwerte seit 2019.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<!-- Als App auf dem Home-Bildschirm: läuft ohne Browser-Leisten, der Film füllt dann wirklich den ganzen Bildschirm -->
+<link rel="manifest" href="/site.webmanifest">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sonnenhaus">
+<script type="module" src="/src/main.ts"></script>
+<script type="module" src="/src/film/film.ts"></script>
+</head>
+<body>
+
+<a class="skip" href="#main">Zum Inhalt springen</a>
+
+<!-- Der Film oben, darunter alle Zahlen und Diagramme -->
+<section id="filmBox" aria-label="Film: Das Sonnenhaus von Goldbach">
+<div id="filmFrame"><svg id="film" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Comic-Film über das Sonnenhaus in Goldbach"></svg></div>
+</section>
+
+<header class="wrap top" id="top">
+  <div class="kicker">Echte Messwerte seit 2019</div>
+  <h1>Unser Sonnenhaus ☀️</h1>
+  <p class="lead">So heizen, kühlen, kochen und radeln wir zu zweit auf 74 m² in Goldbach, und zwar nur mit Strom, ein großer Teil davon von unserem eigenen Dach.</p>
+</header>
+
+<div class="sticky">
+  <div class="wrap">
+    <nav class="secnav" id="secnav" aria-label="Abschnitte">
+      <a href="#start">🏠 Überblick</a><a href="#jahre">📊 Alle Jahre</a><a href="#strom">⚡ Verbrauch</a><a href="#autark">🏝️ Autarkie</a><a href="#batterie">🔋 Batterie</a>
+      <a href="#monate">📅 Jahreslauf</a><a href="#geld">💶 Kosten</a><a href="#lohnt">🐷 Lohnt es sich?</a><a href="#klima">🌍 Klima</a>
+      <a href="#mitmachen">🙌 Mach mit</a><a href="#quiz">🤔 Quiz</a><a href="#lexikon">📖 Lexikon</a>
+    </nav>
+  </div>
+  <div class="readprog" aria-hidden="true"><i id="readProg"></i></div>
+</div>
+
+<main class="wrap" id="main">
+
+  <!-- Szene -->
+  <section id="start" style="padding-top:16px" aria-label="Unser Haus im Überblick">
+   <div class="hero">
+   <div class="herol">
+    <div class="scenebox" id="scenebox">
+    <div class="scenehint">👆 Tippe auf die Dinge im Bild!</div>
+    <svg class="scene" id="scene" viewBox="0 0 800 400" role="group" aria-label="Unser Haus zum Anklicken: Sonne, Solardach, Batterie, Klimaanlage, E-Bike, Haus und Stromnetz">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="var(--sky1)"/><stop offset="1" stop-color="var(--sky2)"/>
+        </linearGradient>
+      </defs>
+      <rect width="800" height="400" fill="url(#sky)"/>
+      <!-- Wolken -->
+      <g id="clouds" fill="#fff" opacity=".85" style="transition:opacity .6s">
+        <g><ellipse cx="560" cy="70" rx="46" ry="18"/><ellipse cx="590" cy="58" rx="30" ry="20"/><ellipse cx="535" cy="62" rx="22" ry="15"/></g>
+        <g id="cloud2" style="transition:opacity .6s"><ellipse cx="250" cy="48" rx="40" ry="15"/><ellipse cx="275" cy="38" rx="26" ry="17"/><ellipse cx="228" cy="42" rx="18" ry="12"/></g>
+      </g>
+      <!-- Boden -->
+      <path d="M0 338 Q400 310 800 338 V400 H0Z" fill="var(--grass)"/>
+
+      <!-- Strommast -->
+      <g transform="translate(700 150)">
+        <g class="hot" data-k="grid" tabindex="0" role="button" aria-label="Stromnetz">
+          <rect x="-40" y="-10" width="80" height="200" fill="transparent"/>
+          <g stroke="var(--stroke)" stroke-width="5" stroke-linecap="round" fill="none">
+            <line x1="0" y1="0" x2="0" y2="182"/><line x1="-26" y1="14" x2="26" y2="14"/><line x1="-18" y1="36" x2="18" y2="36"/>
+            <line x1="0" y1="60" x2="-22" y2="182"/><line x1="0" y1="60" x2="22" y2="182"/>
+          </g>
+        </g>
+        <path d="M26 14 Q70 30 110 18" stroke="var(--stroke)" stroke-width="2" fill="none"/>
+        <circle class="ping-ring" cx="30" cy="-6" r="8"/><circle class="ping" cx="30" cy="-6" r="6"/>
+      </g>
+
+      <!-- Haus -->
+      <g class="hot" data-k="house" tabindex="0" role="button" aria-label="Unser Haus">
+        <rect x="300" y="200" width="220" height="140" rx="6" fill="var(--house)" stroke="var(--stroke)" stroke-width="3"/>
+        <rect x="325" y="236" width="52" height="42" rx="5" fill="var(--window)" stroke="var(--stroke)" stroke-width="3"/>
+        <rect x="443" y="236" width="52" height="42" rx="5" fill="var(--window)" stroke="var(--stroke)" stroke-width="3"/>
+        <line x1="351" y1="236" x2="351" y2="278" stroke="var(--stroke)" stroke-width="2"/><line x1="469" y1="236" x2="469" y2="278" stroke="var(--stroke)" stroke-width="2"/>
+        <rect x="392" y="268" width="36" height="72" rx="5" fill="var(--roof)" stroke="var(--stroke)" stroke-width="3"/>
+        <circle cx="420" cy="306" r="3" fill="var(--window)"/>
+      </g>
+      <circle class="ping-ring" cx="395" cy="250" r="8"/><circle class="ping" cx="395" cy="250" r="6"/>
+
+      <!-- Dach + Solar -->
+      <g class="hot" data-k="roof" tabindex="0" role="button" aria-label="Solardach">
+        <polygon points="282,206 332,116 488,116 538,206" fill="var(--roof)" stroke="var(--stroke)" stroke-width="3" stroke-linejoin="round"/>
+        <g stroke="#9fc2ec" stroke-width="1.5">
+          <polygon points="304,196 342,128 478,128 516,196" fill="var(--panel)" stroke-width="2"/>
+          <line x1="323" y1="162" x2="497" y2="162"/>
+          <line x1="376" y1="128" x2="358" y2="196"/><line x1="410" y1="128" x2="410" y2="196"/><line x1="444" y1="128" x2="462" y2="196"/>
+        </g>
+      </g>
+      <circle class="ping-ring" cx="490" cy="124" r="8"/><circle class="ping" cx="490" cy="124" r="6"/>
+
+      <!-- Innengerät Klimaanlage -->
+      <g class="hot" data-k="ac" tabindex="0" role="button" aria-label="Klimaanlage, Innengerät">
+        <rect x="438" y="210" width="62" height="18" rx="6" fill="#fff" stroke="var(--stroke)" stroke-width="2.5"/>
+        <line x1="446" y1="222" x2="492" y2="222" stroke="var(--stroke)" stroke-width="1.5"/>
+      </g>
+      <g class="airflow" id="airflow"><path d="M448 232 q4 6 0 12"/><path d="M469 232 q4 6 0 12"/><path d="M490 232 q4 6 0 12"/></g>
+
+      <!-- Außengerät -->
+      <g transform="translate(540 288)">
+        <g class="hot" data-k="ac" tabindex="0" role="button" aria-label="Klimaanlage, Außengerät">
+          <rect width="66" height="52" rx="8" fill="var(--device)" stroke="var(--stroke)" stroke-width="3"/>
+          <circle cx="24" cy="26" r="16" fill="none" stroke="var(--stroke)" stroke-width="2.5"/>
+          <g class="fan" fill="var(--heat)"><path d="M24 26 L24 13 Q31 18 24 26Z"/><path d="M24 26 L35 32 Q28 37 24 26Z"/><path d="M24 26 L13 32 Q14 24 24 26Z"/></g>
+          <rect x="46" y="12" width="12" height="4" rx="2" fill="var(--stroke)"/><rect x="46" y="22" width="12" height="4" rx="2" fill="var(--stroke)"/>
+        </g>
+        <circle class="ping-ring" cx="62" cy="2" r="8"/><circle class="ping" cx="62" cy="2" r="6"/>
+      </g>
+
+      <!-- Batterie -->
+      <g id="battGroup" transform="translate(236 262)">
+        <g class="hot" data-k="batt" tabindex="0" role="button" aria-label="Batterie">
+          <rect x="14" y="-7" width="16" height="9" rx="2" fill="var(--stroke)"/>
+          <rect width="44" height="76" rx="8" fill="var(--device)" stroke="var(--stroke)" stroke-width="3"/>
+          <rect id="battFill" x="6" y="20" width="32" height="50" rx="4" fill="var(--battery)" style="transition:all .5s"/>
+          <path d="M24 30 L16 46 H24 L20 60 L30 40 H22 Z" fill="#fff"/>
+        </g>
+        <circle class="ping-ring" cx="44" cy="-4" r="8"/><circle class="ping" cx="44" cy="-4" r="6"/>
+      </g>
+
+      <!-- E-Bike -->
+      <g transform="translate(110 296)">
+        <g class="hot" data-k="bike" tabindex="0" role="button" aria-label="E-Bike">
+          <rect x="-20" y="-16" width="108" height="64" fill="transparent"/>
+          <g stroke="var(--bike)" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="0" cy="26" r="18"/><circle cx="68" cy="26" r="18"/>
+            <path d="M0 26 L22 0 L52 0 L68 26 M22 0 L34 26 L52 0 M34 26 L0 26"/>
+            <path d="M52 0 L48 -12 L58 -12 M18 -6 L28 -6"/>
+          </g>
+          <rect x="26" y="3" width="14" height="8" rx="2" fill="var(--battery)"/>
+        </g>
+        <circle class="ping-ring" cx="34" cy="-24" r="8"/><circle class="ping" cx="34" cy="-24" r="6"/>
+      </g>
+
+      <!-- Sonne -->
+      <g id="sunpos" class="sunpos" transform="translate(105 88)">
+        <g class="hot" data-k="sun" tabindex="0" role="button" aria-label="Sonne">
+          <g class="rays" stroke="var(--sun)" stroke-width="6" stroke-linecap="round">
+            <line x1="0" y1="-52" x2="0" y2="-68"/><line x1="0" y1="52" x2="0" y2="68"/>
+            <line x1="-52" y1="0" x2="-68" y2="0"/><line x1="52" y1="0" x2="68" y2="0"/>
+            <line x1="37" y1="37" x2="48" y2="48"/><line x1="-37" y1="-37" x2="-48" y2="-48"/>
+            <line x1="37" y1="-37" x2="48" y2="-48"/><line x1="-37" y1="37" x2="-48" y2="48"/>
+          </g>
+          <circle r="40" fill="var(--sun)"/>
+          <circle cx="-13" cy="-6" r="4" fill="#5b4210"/><circle cx="13" cy="-6" r="4" fill="#5b4210"/>
+          <path id="smile" d="M-14 10 Q0 22 14 10" stroke="#5b4210" stroke-width="4" fill="none" stroke-linecap="round"/>
+        </g>
+        <circle class="ping-ring" cx="38" cy="-38" r="8"/><circle class="ping" cx="38" cy="-38" r="6"/>
+      </g>
+
+      <!-- Energieflüsse -->
+      <path id="fSun" class="flow" d="M150 104 Q250 112 334 150" stroke="var(--sun)"/>
+      <path id="fBatt" class="flow" d="M306 200 Q280 220 262 256" stroke="var(--battery)"/>
+      <path id="fHeat" class="flow" d="M520 300 L538 306" stroke="var(--heat)"/>
+      <path id="fBike" class="flow" d="M298 316 Q240 345 190 326" stroke="var(--bike)"/>
+      <path id="fExp" class="flow" d="M520 214 Q620 160 692 164" stroke="var(--sun)"/>
+      <path id="fImp" class="flow rev" d="M520 254 Q630 240 692 190" stroke="var(--grid)"/>
+    </svg>
+    <div class="bubble" id="bubble" role="dialog" aria-live="polite" hidden></div>
+    </div>
+
+    <div class="player">
+      <button class="play" id="play" aria-label="Jahr abspielen">▶</button>
+      <div class="slider">
+        <input type="range" id="monthRange" min="0" value="0" aria-label="Monat wählen">
+        <div class="ticks" id="ticks"></div>
+      </div>
+      <div class="period" id="period"></div>
+    </div>
+   </div>
+
+   <!-- Energiebilanz: alle Werte gebündelt -->
+   <aside class="card bilanz" aria-labelledby="blTitle">
+     <div class="bl-head"><h2 id="blTitle">Energiebilanz</h2><span class="per" id="blPer"></span></div>
+
+     <div class="bl-row"><span class="bl-ic">☀️</span><span class="bl-name">Vom Dach geerntet</span><b class="bl-val"><span id="sPv"></span><small> kWh</small></b></div>
+     <div class="bl-leg" id="legPv"></div>
+     <div class="bar" id="barPv" aria-hidden="true"></div>
+     <div class="ribbon" id="ribbon" aria-hidden="true"></div>
+     <div class="bar" id="barUse" aria-hidden="true"></div>
+     <div class="bl-leg" id="legUse"></div>
+     <div class="bl-row"><span class="bl-ic">🏠</span><span class="bl-name">Im Haus gebraucht</span><b class="bl-val"><span id="sCons"></span><small> kWh</small></b></div>
+
+     <div class="kpis">
+       <a class="kpi" href="#autark">
+         <span class="ring">
+           <svg viewBox="0 0 100 100" aria-hidden="true">
+             <circle cx="50" cy="50" r="40" fill="none" stroke="var(--line)" stroke-width="13"/>
+             <circle id="gSun" cx="50" cy="50" r="40" fill="none" stroke="var(--sun)" stroke-width="13" pathLength="100" transform="rotate(-90 50 50)"/>
+             <circle id="gBatt" cx="50" cy="50" r="40" fill="none" stroke="var(--battery)" stroke-width="13" pathLength="100" transform="rotate(-90 50 50)"/>
+           </svg>
+           <b id="gPct"></b>
+         </span>
+         <span class="kl">vom eigenen Dach</span>
+       </a>
+       <a class="kpi" href="#geld"><span class="ki">💶</span><b id="kMoney"></b><span class="kl" id="kMoneyL"></span></a>
+       <a class="kpi" href="#klima"><span class="ki">🌍</span><b id="kCo2"></b><span class="kl">CO₂ vermieden</span></a>
+     </div>
+   </aside>
+   </div>
+  </section>
+
+  <!-- Alle Jahre auf einen Blick -->
+  <section id="jahre" aria-labelledby="jahreH">
+    <div class="kicker">Seit 2019</div>
+    <h2 id="jahreH">Unsere Jahre auf einen Blick 📊</h2>
+    <p class="lead">Ein Balken pro Jahr: Nach oben wächst die Sonnenernte, nach unten unser Verbrauch. Gelb ist oben und unten derselbe Strom, den wir direkt vom Dach selbst verbraucht haben. Je weniger Rot unten, desto weniger mussten wir kaufen.</p>
+    <div class="card">
+      <div class="yhead"><span>⬆️ <b>nach oben:</b> die Sonnenernte vom Dach</span><span>⬇️ <b>nach unten:</b> unser Verbrauch</span></div>
+      <div class="keys"><span style="--c:#f2b233">direkt selbst genutzt</span><span style="--c:#2bb3a6">über die Batterie</span>
+        <span style="--c:#7cc46a">eingespeist (an die Nachbarn)</span><span style="--c:#e8735a">aus dem Netz gekauft</span></div>
+      <div class="hscroll"><div class="chartbox tall"><canvas id="cYears" role="img" aria-label="Säulendiagramm je Jahr seit 2019, ein Balken durch die Nulllinie: nach oben die Sonnenernte, aufgeteilt in direkt selbst genutzt, in die Batterie und eingespeist; nach unten der Verbrauch, aufgeteilt in direkt vom Dach, über die Batterie und aus dem Netz gekauft"></canvas></div></div>
+      <p class="muted small" id="yearsNote"></p>
+    </div>
+  </section>
+
+  <!-- Alles mit Strom -->
+  <section id="strom">
+    <div class="kicker">Alles läuft mit Strom</div>
+    <h2>Wofür brauchen wir Energie?</h2>
+    <p class="lead">Viele Häuser brauchen drei Sorten Energie: Gas oder Öl zum Heizen, Benzin fürs Auto und Strom für den Rest. Bei uns kommt <b>fast alles aus der Steckdose</b>: die Heizung, das warme Wasser, der Haushalt und die E-Bikes. Nur unser Auto tankt leider noch Benzin – <b>bald zieht ein Elektroauto ein</b>.</p>
+    <div class="nofossil"><span><s>🛢️ Öl</s></span><span><s>🔥 Gas</s></span><span>⛽ Benzin (noch – bald E-Auto)</span><span class="yes">⚡ sonst alles Strom</span></div>
+    <div class="split" id="split"></div>
+    <div class="cats">
+      <div class="card cat" style="--c:var(--heat)">
+        <div class="icon">🌡️</div>
+        <h3>Heizen (und Kühlen)</h3>
+        <div class="big num"><span id="cHeat"></span><small>kWh</small></div>
+        <div class="share" id="cHeatS"></div>
+        <p>Wir heizen mit einer <b>Luft-Luft-Wärmepumpe</b>, einer Klimaanlage von Mitsubishi (Diamond MSZ-LN25). Draußen holt sie Wärme aus der Luft, drinnen bläst sie warme Luft ins Zimmer. Aus <b>1 Teil Strom</b> macht sie etwa <b><span class="jaz"></span> Teile Wärme</b>. Im Sommer kann sie auch kühlen.</p>
+        <p id="cHeatBefore" style="font-size:15px;background:var(--sun-soft);border-radius:12px;padding:8px 12px">2019 hatten wir die Klimaanlage noch nicht. Da heizten wir <b>direkt mit Strom</b>, und aus 1 Teil Strom wurde nur 1 Teil Wärme.</p>
+        <p class="muted" style="font-size:13.5px">Geschätzt, weil wir keinen eigenen Zähler dafür haben: alles, was wir in einem Monat mehr brauchen als im Sommer. Das entspricht etwa <b><span id="cHeatM2"></span> kWh Wärme pro m²</b> im Jahr.</p>
+      </div>
+      <div class="card cat" style="--c:var(--home)">
+        <div class="icon">🚿</div>
+        <h3>Haushalt &amp; warmes Wasser</h3>
+        <div class="big num"><span id="cHome"></span><small>kWh</small></div>
+        <div class="share" id="cHomeS"></div>
+        <p>Kühlschrank, Herd, Waschmaschine, Licht und Computer. Das warme Wasser macht ein <b>elektrischer Durchlauferhitzer</b>, genau dann, wenn jemand den Hahn aufdreht. Das sind im Schnitt <b><span id="cHomeDay"></span> kWh pro Tag</b>, für uns zwei also etwa <b><span id="cHomePP"></span> kWh pro Person</b> im Jahr.</p>
+      </div>
+      <div class="card cat" style="--c:var(--bike)">
+        <div class="icon">🚲</div>
+        <h3>E-Bikes</h3>
+        <div class="big num">≈ 1<small>kWh pro 100 km</small></div>
+        <div class="share">steckt im Haushaltsstrom</div>
+        <p>Unsere E-Bikes laden ganz normal an der Steckdose. 100 km kosten uns nur etwa <b><span id="cBikeCt"></span> Cent</b> Strom, und tagsüber kommt der sogar vom Dach. Ein Auto bräuchte für die gleiche Strecke rund <b>7 Liter Benzin</b>.</p>
+      </div>
+    </div>
+    <div class="tip"><b>💡 Gewusst?</b><p>Die E-Bikes fallen in unserer Stromrechnung kaum auf: Für 100 km braucht ein E-Bike etwa so viel Strom wie ein Föhn in einer halben Stunde.</p></div>
+  </section>
+
+  <!-- 100 Punkte -->
+  <section id="autark">
+    <div class="kicker">Autarkie</div>
+    <h2>Woher kommt unser Strom?</h2>
+    <div class="dotsgrid">
+      <div class="dots" id="dots" aria-hidden="true"></div>
+      <div>
+        <p class="lead" style="color:var(--text)">Stell dir vor, unser Strom wäre in <b>100 Kugeln</b> aufgeteilt. Jede Kugel hat eine Farbe, je nachdem, woher sie kommt:</p>
+        <div class="legend">
+          <div style="--c:var(--sun)"><span class="n" id="dDirect"></span><span>☀️ kamen <b>direkt vom Dach</b>, in dem Moment, in dem die Sonne schien</span></div>
+          <div style="--c:var(--battery)"><span class="n" id="dBatt"></span><span>🔋 hatten wir tagsüber <b>in der Batterie</b> gespeichert, für abends und nachts</span></div>
+          <div style="--c:var(--grid)"><span class="n" id="dGrid"></span><span>🔌 haben wir <b>aus dem Netz</b> gekauft</span></div>
+        </div>
+        <p class="autark">Unser Autarkiegrad: <span id="dAut"></span></p>
+        <p class="muted">„Autark“ heißt „unabhängig“. Je höher die Zahl, desto weniger Strom müssen wir kaufen. Im besten Monat (<span id="dBest"></span>) waren es sogar <b id="dBestV"></b>, im dunkelsten (<span id="dWorst"></span>) nur <b id="dWorstV"></b>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Batterie -->
+  <section id="batterie">
+    <div class="kicker" id="bKicker"></div>
+    <h2>Unsere Batterie: Sonne für den Abend 🔋</h2>
+    <p class="lead">Früher mussten wir jeden Abend Strom kaufen, obwohl das Dach mittags viel zu viel geerntet hatte. Jetzt heben wir den Sonnenstrom vom Mittag für den Abend auf, wie Vorräte in einer Speisekammer. Unsere Zendure-Batterie haben wir in zwei Schritten gekauft und dann erweitert: zuerst 2,88 kWh, dann noch einmal 2,88 kWh.</p>
+    <div class="cmp">
+      <div class="card"><div class="muted" id="bBeforeL"></div><div class="big num" id="bBefore"></div><div class="muted">vom eigenen Dach</div></div>
+      <div class="arrow">→</div>
+      <div class="card hl"><div class="muted" id="bAfterL"></div><div class="big num" id="bAfter"></div><div class="muted">vom eigenen Dach</div></div>
+    </div>
+    <div class="grid2b">
+      <div class="card">
+        <h3>Autarkie Monat für Monat <span class="muted">· <span class="selY"></span></span></h3>
+        <div class="keys"><span style="--c:var(--grid)" id="kPrev"></span><span style="--c:var(--leaf)" id="kCur"></span></div>
+        <div class="chartbox"><canvas id="cAutCmp" role="img" aria-label="Säulendiagramm: Autarkiegrad je Monat, Vorjahr ohne Batterie gegen dieses Jahr mit Batterie"></canvas></div>
+      </div>
+      <div class="card">
+        <h3>Was in die Batterie rein- und rausging <span class="muted">· <span class="selY"></span></span></h3>
+        <div id="cBattBox">
+          <div class="keys"><span style="--c:color-mix(in srgb, var(--battery) 45%, transparent)">Geladen</span><span style="--c:var(--battery)">Entladen</span></div>
+          <div class="chartbox"><canvas id="cBatt" role="img" aria-label="Säulendiagramm: in die Batterie geladene und entladene Kilowattstunden je Monat im gewählten Jahr"></canvas></div>
+        </div>
+        <p class="muted" id="bYearSum">In diesem Jahr: <b id="bYearIn"></b> kWh hinein, <b id="bYearOut"></b> kWh heraus.</p>
+        <p class="battempty" id="battEmpty" hidden></p>
+      </div>
+    </div>
+    <div class="tip"><b>💡 Gewusst?</b><p>Seit sie da ist, hat unsere Batterie <b id="bIn"></b> kWh Sonnenstrom eingelagert und <b id="bOut"></b> kWh wieder abgegeben. Beim Speichern geht immer ein bisschen verloren, so wie eine Thermoskanne langsam abkühlt: Von 100 kWh, die hineingehen, kommen bei uns etwa <b id="bEff"></b> wieder heraus. Ab März 2026, nach der Erweiterung, passt doppelt so viel hinein. Das sieht man im Diagramm!</p></div>
+
+    <h3 style="margin-top:32px">Autarkie-Kalender seit 2019</h3>
+    <p class="muted">Jedes Kästchen ist ein Monat. Je grüner, desto mehr Strom kam vom eigenen Dach. Siehst du, ab wann es grüner wird?</p>
+    <div class="card"><div class="heat" id="heat"></div></div>
+  </section>
+
+  <!-- Monate -->
+  <section id="monate">
+    <div class="kicker">Das Jahr im Überblick</div>
+    <h2>Das große Sonne-gegen-Winter-Rennen</h2>
+    <p class="lead">Die gelbe Fläche zeigt, wie viel Sonnenstrom unser Dach jeden Monat erntet. Die Säulen zeigen, wie viel wir brauchen. Siehst du, dass die beiden genau verkehrt herum laufen?</p>
+    <div class="card">
+      <div class="keys">
+        <span class="line" style="--c:var(--sun)">Sonnenernte</span>
+        <span style="--c:var(--heat)">Heizen (geschätzt)</span>
+        <span style="--c:var(--home)">Haushalt, Warmwasser &amp; E-Bikes</span>
+      </div>
+      <div class="chartbox"><canvas id="cMonths" role="img" aria-label="Diagramm: Sonnenernte als Fläche und Verbrauch für Heizen und Haushalt als Säulen, je Monat"></canvas></div>
+    </div>
+    <div class="tip"><b>💡 Darum ist das spannend</b><p>Im Sommer erntet das Dach viel mehr, als wir brauchen. Den Rest geben wir ins Netz ab. Im Winter ist es genau umgekehrt: Die Sonne ist schwach und die Wärmepumpe hat am meisten zu tun. Im <span id="mBest"></span> erntet unser Dach etwa <b><span id="mRatio"></span>-mal</b> so viel wie im <span id="mWorst"></span>. Strom vom Sommer in den Winter zu bringen, ist eine der größten Aufgaben der Energiewende.</p></div>
+  </section>
+
+  <!-- Geld -->
+  <section id="geld">
+    <div class="kicker">Geld</div>
+    <h2>Was kostet uns die Energie?</h2>
+    <p class="lead">Unsere Kosten sind die Stromrechnung minus das Geld, das wir für eingespeisten Strom bekommen. Seit 2026 beziehen wir Ökostrom von <b>Green Planet Energy</b> (Genossenschaftsstrom). Aber ist das viel oder wenig? Dafür vergleichen wir mit anderen Häusern. <b>Wähle ein Vergleichshaus:</b></p>
+    <div class="refs" id="refs"></div>
+    <p class="muted small" style="max-width:760px">Alle Vergleichshäuser haben 74 m², verbrauchen gleich viel Haushaltsstrom wie wir und machen <b>warmes Wasser über ihre Heizung</b> (Gas, Öl oder Wärmepumpe) statt mit einem Durchlauferhitzer. Dafür rechnen wir mit etwa <span id="wwInfo"></span> kWh Warmwasser im Jahr: Das sind rund 40 Liter warmes Wasser pro Person und Tag, für uns zwei. Der Wärmebedarf verteilt sich übers Jahr wie bei uns, mit viel im Winter und fast nichts im Sommer.</p>
+
+    <div class="money">
+      <div class="card">
+        <div class="keys">
+          <span style="--c:var(--grid)" id="kRef"></span>
+          <span style="--c:var(--leaf)">Unser Sonnenhaus</span>
+          <span class="line" style="--c:var(--sun)">Gespart, aufaddiert</span>
+        </div>
+        <div class="chartbox"><canvas id="cCost" role="img" aria-label="Diagramm: Energiekosten pro Jahr, unser Haus gegen das Vergleichshaus, mit aufaddierter Ersparnis"></canvas></div>
+      </div>
+      <div class="card piggy">
+        <div class="em">🐷</div>
+        <div class="muted" style="font-weight:700">Seit 2019 gespart</div>
+        <div class="big num" id="pTotal"></div>
+        <div class="muted" style="font-size:15px">gegenüber dem Vergleichshaus „<span id="pRef"></span>“</div>
+        <div class="muted" style="font-size:15px;margin-top:8px">Im Jahr <span class="selY"></span>: <b id="pYear"></b></div>
+      </div>
+    </div>
+
+    <details class="card more" style="margin-top:28px">
+      <summary>📋 Alle Jahre als Tabelle</summary>
+      <div class="tablewrap"><table id="costTable"></table></div>
+    </details>
+
+    <h3 style="margin-top:32px">Warum Selbermachen besser ist als Verkaufen</h3>
+    <p class="muted">Jede Kilowattstunde vom Dach können wir entweder selbst nutzen oder ins Netz abgeben.</p>
+    <div class="vs">
+      <div class="card"><div class="em" style="font-size:30px">🏠</div><div class="big num ink" style="--c:var(--leaf)"><span id="vSelf"></span> ct</div><div class="muted">spart sie, wenn wir sie <b>selbst nutzen</b>, weil wir dann keinen Strom kaufen müssen</div></div>
+      <div class="or">oder</div>
+      <div class="card"><div class="em" style="font-size:30px">🔌</div><div class="big num ink" style="--c:var(--sun)"><span id="vFeed"></span> ct</div><div class="muted">bekommen wir, wenn wir sie <b>ins Netz verkaufen</b> (Einspeisevergütung)</div></div>
+    </div>
+    <div class="tip"><b>💡 Darum lohnt sich der Eigenverbrauch</b><p>Selbst genutzter Sonnenstrom ist für uns im Jahr <span class="selY"></span> etwa <b><span id="vRatio"></span>-mal</b> so viel wert wie verkaufter. Deshalb waschen wir gern mittags, laden die E-Bikes, wenn die Sonne scheint, und speichern Strom in der Batterie.</p></div>
+  </section>
+
+  <!-- Investitionen -->
+  <section id="lohnt">
+    <div class="kicker">Hat es sich gelohnt?</div>
+    <h2>Unsere Technik und was sie gekostet hat</h2>
+    <p class="lead">Solardach, Klimaanlage und Batterie haben am Anfang Geld gekostet. Seitdem sparen sie jedes Jahr etwas ein. Wie bei einem Sparschwein, das sich langsam füllt: Ist mehr drin, als wir bezahlt haben, hat sich die Technik <b>„amortisiert“</b>.</p>
+    <div class="timeline" id="timeline"></div>
+    <div class="payback" id="payback"></div>
+    <div class="card total" id="payTotal"></div>
+    <p class="muted small" style="margin-top:12px">So rechnen wir: <b>Solardach</b> = selbst genutzter Strom × Strompreis + Einspeisevergütung. <b>Batterie</b> = abends genutzter Batteriestrom × Strompreis − die Vergütung, die wir für diesen Strom sonst beim Einspeisen bekommen hätten. <b>Klimaanlage</b> = verglichen mit einer <b>Gasheizung</b> oder einer <b>Luft-Wasser-Wärmepumpe</b>. Vorher hatten wir Stromheizung, beide hätten also erst Heizkörper und Rohre gebraucht, die Gasheizung zusätzlich einen Gasanschluss. Gezählt wird, was die Klimaanlage beim Kauf weniger gekostet hat (bei der Wärmepumpe nach Förderung), plus der Unterschied bei den Energiekosten seit 2020: bei Gas das Gas für dieselbe Wärme und das warme Wasser (Kessel mit <span id="aBoiler"></span> % Wirkungsgrad) plus <span id="aBaseGas"></span> € Grundgebühr im Monat, bei der Wärmepumpe deren Strom fürs Heizen und warme Wasser, jeweils gegen den Strom der Klimaanlage und des Durchlauferhitzers. Ohne Wartung und Zinsen.</p>
+  </section>
+
+  <!-- Klima -->
+  <section id="klima">
+    <div class="kicker">Klima</div>
+    <h2>Gut für die Erde 🌍</h2>
+    <p class="lead">Wenn man Gas, Öl oder Benzin verbrennt, entsteht <b>CO₂</b>. Das ist ein unsichtbares Gas, das sich wie eine zu warme Decke um unsere Erde legt. Sonnenstrom entsteht ganz ohne Verbrennen.</p>
+    <div class="climate">
+      <div class="card">
+        <div class="muted" style="font-weight:700">Im Jahr <span class="selY"></span> haben wir vermieden:</div>
+        <div class="co2big num"><span id="kYear"></span> <span style="font-size:.45em">Tonnen CO₂</span></div>
+        <div class="trees" id="trees" aria-hidden="true"></div>
+        <div class="muted" style="font-size:15px">So viel CO₂ holen <b id="kTrees"></b> Bäume in einem ganzen Jahr aus der Luft. <span id="kTreeUnit"></span></div>
+        <div class="muted small" style="margin-top:8px">Verglichen mit dem Vergleichshaus „<span class="refName"></span>“.</div>
+      </div>
+      <div class="card">
+        <h3>So kommt das zusammen</h3>
+        <div class="rows">
+          <div><span id="kHeatL"></span><b id="kHeat"></b></div>
+          <div><span>☀️ Weniger Strom aus dem Netz</span><b id="kGrid"></b></div>
+          <div><span>🎁 Sonnenstrom für die Nachbarn ersetzt Kohle- und Gasstrom</span><b id="kExp"></b></div>
+          <div style="border:0"><span><b>Zusammen</b></span><b id="kSum"></b></div>
+        </div>
+        <div class="tip"><b>🚗 Zum Vergleich</b><p>Ein Auto müsste <b id="kCar"></b> km fahren, um so viel CO₂ auszustoßen. Das ist <b id="kEarth"></b>-mal um die ganze Erde! Seit 2019 haben wir zusammen schon <b id="kTotal"></b> Tonnen CO₂ vermieden.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mitmachen -->
+  <section id="mitmachen" aria-labelledby="ctaH">
+    <div class="cta card">
+      <div class="kicker">Mach mit!</div>
+      <h2 id="ctaH">Werde auch ein Sonnenhaus ☀️</h2>
+      <p class="lead">Unser Dach erntet seit 2019 Sonnenstrom, die Klimaanlage heizt damit, die Batterie hebt ihn für den Abend auf. Das geht auch bei dir, und du musst nicht alles auf einmal machen.</p>
+      <ol class="steps">
+        <li><span class="n">1</span><div><b>Dach prüfen</b><p>Wie viel Sonne passt auf dein Dach? Ein Solarrechner oder ein Fachbetrieb sagt es dir.</p></div></li>
+        <li><span class="n">2</span><div><b>Klein anfangen</b><p>Ein Balkonkraftwerk gibt es schon ab ein paar hundert Euro, auch für Mietwohnungen.</p></div></li>
+        <li><span class="n">3</span><div><b>Groß denken</b><p>Solar, Speicher und Wärmepumpe: Förderung prüfen und mehrere Angebote vergleichen.</p></div></li>
+      </ol>
+      <p class="small muted" style="margin:0 0 12px">Wir sind keine Firma und verkaufen nichts. Das hier ist unser Freizeitprojekt. Wir erzählen aber gern, was wir erlebt haben.</p>
+      <p class="ctamail"><a class="ctabtn" href="mailto:andreas.gerhard@oneguitar.eu?subject=Sonnenhaus%20Goldbach">✉️ Fragen? Schreib uns!</a>
+        <span class="muted">andreas.gerhard@oneguitar.eu</span></p>
+    </div>
+  </section>
+
+  <!-- Quiz -->
+  <section id="quiz">
+    <div class="kicker">Mitmachen</div>
+    <h2>Rate mal! 🤔</h2>
+    <p class="lead">Teste dein Energie-Wissen, die Antworten stecken alle auf dieser Seite.</p>
+    <div class="quiz" id="quizBox"></div>
+  </section>
+
+  <!-- Lexikon -->
+  <section id="lexikon">
+    <div class="kicker">Kleines Energie-Lexikon</div>
+    <h2>Was heißt eigentlich …?</h2>
+    <div class="lex" id="lex"></div>
+
+    <details class="card">
+      <summary>🔧 Für Zahlen-Fans: Annahmen &amp; Preise</summary>
+      <p class="muted" style="margin-top:10px">Erzeugung, Verbrauch, Netzbezug und Einspeisung sind <b>echte Monatswerte aus dem Sunny Portal</b> (Sunny Home Manager). Die Batteriewerte sind bis Oktober 2026 von Hand eingetragen, neue Monate schickt unser Home Assistant automatisch. Für 2026 gilt unser echter Tarif bei Green Planet Energy. Für 2019 bis 2025 rechnen wir mit groben deutschen Durchschnittspreisen. Wer die echten Rechnungen hat, kann die Werte hier ändern. Alles wird sofort neu berechnet.</p>
+      <div class="settings" id="settings"></div>
+      <div class="tablewrap"><table id="priceTable"></table></div>
+      <p class="muted" style="font-size:14px;margin-top:12px">Heizstrom ist geschätzt: Pro Jahr nehmen wir den durchschnittlichen Verbrauch von Juni bis August als „Grundverbrauch“, alles darüber zählt als Heizen. Weil die Klimaanlage im Sommer auch kühlt, ist der Heizstrom eher etwas unterschätzt. Wärme = Heizstrom × Jahresarbeitszahl, vor der Klimaanlage (2019) mit Faktor 1, weil wir direkt mit Strom geheizt haben. Vergleichshäuser: Gas mit Kessel-Wirkungsgrad und 0,201 kg CO₂/kWh, Heizöl mit 0,266 kg CO₂/kWh, Strom mit dem deutschen Strommix des Jahres. Abgegebener Sonnenstrom ersetzt Strom aus dem Mix. Die Herstellung der Anlagen ist nicht eingerechnet. Ein Baum nimmt etwa <span id="aTree"></span> kg CO₂ pro Jahr auf, ein Auto stößt etwa 150 g pro km aus.</p>
+    </details>
+  </section>
+</main>
+
+<footer class="wrap foot">
+  <p class="hobby">💛 Ein privates Freizeitprojekt: Wir verkaufen nichts, wir möchten einfach teilen, wie toll wir unser Sonnenhaus finden, und vielleicht ein paar Menschen inspirieren, es auch zu versuchen.</p>
+  <span>Unser Sonnenhaus in Goldbach · Daten: Sunny Home Manager &amp; Home Assistant · <span id="fStand"></span></span>
+  <nav aria-label="Rechtliches"><a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></nav>
+</footer>
+<a href="#top" class="totop" id="totop" aria-label="Nach oben">↑</a>
+
+</body>
+</html>
