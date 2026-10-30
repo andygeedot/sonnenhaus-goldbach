@@ -559,10 +559,12 @@ function toggleFullscreen() {
   }
 }
 // iPhone-Safari kann für Seiten kein echtes Vollbild. Als App vom Home-Bildschirm aber schon – das verraten wir einmal.
+let tipShown = false;
 function appTip() {
   const standalone = (navigator as Navigator & { standalone?: boolean }).standalone;
   if (standalone !== false) return;   // nur iPhone/iPad-Safari im Browser
-  try { if (sessionStorage.getItem("appTip")) return; sessionStorage.setItem("appTip", "1"); } catch { /* privat: dann eben jedes Mal */ }
+  if (tipShown) return;   // einmal pro Seitenaufruf – bewusst ohne Speicher im Browser (keine Einwilligung nötig)
+  tipShown = true;
   const tip = document.createElement("div");
   tip.id = "appTip"; tip.setAttribute("role", "status");
   tip.innerHTML = `<b>Tipp:</b> Über <b>Teilen → Zum Home-Bildschirm</b> wird der Film zur App – dann läuft er ganz ohne Safari-Leisten.`;

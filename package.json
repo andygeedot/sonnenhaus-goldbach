@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "node scripts/check-legal.mjs && tsc --noEmit && vite build",
+    "build": "node scripts/check-legal.mjs && node scripts/licenses.mjs && tsc --noEmit && vite build",
     "preview": "vite preview --host",
     "test": "vitest run",
     "import:csv": "node scripts/import-sunnyportal.mjs",
