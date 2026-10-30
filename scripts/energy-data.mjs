@@ -57,6 +57,10 @@ export function withDerived({ y, m, pv, imp, exp, battIn, battOut }) {
 export function upsertMonth(data, values, today = new Date()) {
   const months = data.months.filter(r => !(r.y === values.y && r.m === values.m));
   const old = data.months.find(r => r.y === values.y && r.m === values.m);
+  // Schutz: Ein vorhandener Monat wird nicht durch deutlich kleinere Werte ersetzt – das wäre ein unvollständiger Monat,
+  // z. B. weil die Zähler in Home Assistant erst mitten im Monat angelegt wurden.
+  if (old && values.pv < old.pv * 0.9)
+    throw new Error(`Monat ${values.m + 1}/${values.y}: neue Erzeugung ${values.pv} kWh ist viel kleiner als die gespeicherten ${old.pv} kWh – unvollständiger Monat? Nicht übernommen.`);
   const merged = { battIn: old?.battIn, battOut: old?.battOut, ...stripUndefined(values) };
   months.push(withDerived(merged));
   months.sort((a, b) => a.y - b.y || a.m - b.m);
@@ -83,6 +87,7 @@ export function validatePayload(p, now = new Date()) {
   if (!Number.isInteger(month) || month < 1 || month > 12) throw new Error(`Ungültiger Monat: ${p.month}`);
   if (year === now.getFullYear() && month > now.getMonth() + 1) throw new Error("Monat liegt in der Zukunft");
   const v = { y: year, m: month - 1, pv: num("pv"), imp: num("imp"), exp: num("exp"), battIn: num("battIn", { optional: true, max: 1000 }), battOut: num("battOut", { optional: true, max: 1000 }) };
+  if (v.pv === 0 && v.imp === 0) throw new Error("Alle Werte 0 – Zähler noch ohne Vormonat?");
   if (v.exp > v.pv + 0.5) throw new Error("Einspeisung größer als Erzeugung – Sensoren vertauscht?");
   return v;
 }

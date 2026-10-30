@@ -48,18 +48,52 @@ npm run import:csv
 
 `data/raw/` wird nie veröffentlicht, weil die Exporte E-Mail-Adresse und Anlagen-ID enthalten (siehe `.gitignore`).
 
-**Neue Monate von Home Assistant:** Home Assistant schickt jede Nacht um 23:58 den Stand des laufenden Monats an GitHub. Die Verbindung geht nur von Home Assistant nach außen, Home Assistant bleibt aus dem Internet unerreichbar. GitHub prüft die Werte (`scripts/merge-month.mjs`), speichert sie in `data/energy.json`, lässt die Tests laufen und veröffentlicht die Seite neu.
+**Neue Monate von Home Assistant:** Am 1. jedes Monats um 00:15 (und zur Sicherheit noch einmal um 12:00) schickt Home Assistant die Endstände des Vormonats an GitHub. Die Verbindung geht nur von Home Assistant nach außen, Home Assistant bleibt aus dem Internet unerreichbar. GitHub prüft die Werte (`scripts/merge-month.mjs`), speichert sie in `data/energy.json`, lässt die Tests laufen und veröffentlicht die Seite neu. Ein vorhandener Monat wird nicht durch deutlich kleinere Werte ersetzt (Schutz vor unvollständigen Monaten); dann schlägt der Lauf fehl und GitHub schickt eine E-Mail.
 
 ## Einrichten (einmalig)
 
-1. **Repository auf GitHub anlegen** und diesen Ordner hochladen. Unter *Settings → Pages → Source* „GitHub Actions“ wählen.
+1. **GitHub:** Repository `andygeedot/sonnenhaus-goldbach`, Pages mit Quelle „GitHub Actions“ – erledigt. Seite: https://andygeedot.github.io/sonnenhaus-goldbach/
 2. **Impressum und Datenschutz:** sind ausgefüllt (Andreas Gerhard, Weberborn 8b, 63773 Goldbach). Steht dort je wieder „BITTE ERGÄNZEN“, bricht die Veröffentlichung absichtlich ab.
-3. **Token für Home Assistant:** Unter GitHub *Settings → Developer settings → Fine-grained tokens* einen Token anlegen: nur für dieses Repository, Recht *Contents: Read and write*. In Home Assistant in `secrets.yaml` eintragen:
-   ```yaml
-   sonnenhaus_github_auth: "Bearer github_pat_…"
-   ```
-4. **`homeassistant/sonnenhaus.yaml`** als Paket einbinden, die fünf Quell-Sensoren und `OWNER/REPO` eintragen, Home Assistant neu starten und die Automation einmal von Hand auslösen.
-5. **Eigene Domain (optional):** Unter *Settings → Pages → Custom domain* eintragen, zum Beispiel eine Subdomain von oneguitar.eu.
+3. **Eigene Domain (optional):** Unter *Settings → Pages → Custom domain* eintragen, zum Beispiel eine Subdomain von oneguitar.eu.
+
+## Home Assistant
+
+**1. Token bei GitHub anlegen.** Profilbild → *Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token*:
+- *Repository access:* „Only select repositories“ → `sonnenhaus-goldbach`
+- *Permissions → Repository permissions → Contents:* „Read and write“ (sonst nichts)
+- *Expiration:* bis zu 1 Jahr – im Kalender notieren und dann erneuern.
+
+**2. Token in Home Assistant eintragen,** in `/config/secrets.yaml` (mit „Bearer “ davor):
+```yaml
+sonnenhaus_github_auth: "Bearer github_pat_…"
+```
+
+**3. Paket einbinden.** `homeassistant/sonnenhaus.yaml` nach `/config/packages/sonnenhaus.yaml` kopieren (z. B. mit dem Add-on „File editor“ oder „Samba“). In `/config/configuration.yaml` einmalig:
+```yaml
+homeassistant:
+  packages: !include_dir_named packages
+```
+
+**4. Die fünf Quell-Sensoren eintragen.** In der Paket-Datei stehen fünf `sensor.ERSETZEN_…`. Gebraucht werden **Gesamtzähler in kWh**, die immer weiter steigen (Zustandsklasse „total_increasing“) – also dieselben, die im Energie-Dashboard stehen (*Einstellungen → Dashboards → Energie*). Die genauen Namen findet man unter *Einstellungen → Geräte & Dienste → Entitäten* mit der Suche:
+
+| Platzhalter | Was | wo es typischerweise herkommt |
+|---|---|---|
+| `ERSETZEN_pv_erzeugung_gesamt` | Solarstrom erzeugt, gesamt | SMA-Wechselrichter, „Total yield“ / „Gesamtertrag“ |
+| `ERSETZEN_netzbezug_gesamt` | Strom aus dem Netz, gesamt | Sunny Home Manager, „Metering total absorbed“ (Bezug) |
+| `ERSETZEN_netzeinspeisung_gesamt` | Strom ins Netz, gesamt | Sunny Home Manager, „Metering total yield“ (Einspeisung) |
+| `ERSETZEN_batterie_geladen_gesamt` | in die Batterie geladen, gesamt | Zendure-Integration |
+| `ERSETZEN_batterie_entladen_gesamt` | aus der Batterie entladen, gesamt | Zendure-Integration |
+
+Gibt es für die Batterie nur Leistung (W) statt Energie (kWh): *Einstellungen → Geräte & Dienste → Helfer → Helfer erstellen → „Integral-Sensor“* (Methode „Links“, Einheiten-Präfix „k“, Zeiteinheit „Stunden“) – den daraus entstehenden kWh-Sensor eintragen. Gleiches gilt, wenn die Zendure Laden und Entladen nur als eine Leistung mit Vorzeichen liefert: dann vorher zwei Template-Sensoren bauen (nur positive bzw. nur negative Werte).
+
+**5. Prüfen und neu starten.** *Entwicklerwerkzeuge → YAML → Konfiguration prüfen*, dann neu starten. Danach gibt es fünf neue Sensoren `sensor.sonnenhaus_…_monat`, die ab jetzt mitzählen.
+
+**6. Was dann passiert.**
+- Die Zähler zählen ab dem Einrichten. Der erste **vollständige** Monat ist der erste, der komplett danach liegt. Wer am 30. Oktober einrichtet, bekommt am 1. Dezember den November gesendet.
+- Am 1. November würde der angebrochene Oktober gesendet – GitHub lehnt ihn ab, weil der Oktober aus dem Sunny Portal schon mit viel größeren Werten drin ist. Das ist gewollt; der Lauf auf GitHub wird dann rot und GitHub schickt eine E-Mail, die man ignorieren kann.
+- Klappt das Senden nicht (z. B. Token abgelaufen), erscheint in Home Assistant eine Benachrichtigung.
+
+**7. Testen.** Unter *Einstellungen → Automationen* „Sonnenhaus – Vormonat an die Website schicken“ öffnen, *⋮ → Ausführen*. In den ersten Wochen kommt nur der Hinweis „noch kein Vormonat“ – das ist richtig so. Ab dem ersten Monatswechsel sendet der Test den Vormonat; im Repo unter *Actions* startet dann ein Lauf und `data/energy.json` bekommt den Commit „Monatswerte aus Home Assistant“.
 
 ## Schaufenster: der Film
 

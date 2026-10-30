@@ -47,6 +47,11 @@ describe("Monatswerte von Home Assistant", () => {
     expect(() => validatePayload({ ...ok, month: 12 }, now)).toThrow(/Zukunft/);
     expect(() => validatePayload({ ...ok, exp: 500 }, now)).toThrow(/vertauscht/);
     expect(() => validatePayload({ ...ok, imp: undefined }, now)).toThrow(/fehlt/);
+    expect(() => validatePayload({ ...ok, pv: 0, imp: 0, exp: 0 }, now)).toThrow(/Vormonat/);
+  });
+  it("ersetzt keinen vorhandenen Monat durch einen unvollständigen", () => {
+    const data = { updated: "", months: [withDerived({ y: 2026, m: 9, pv: 471, imp: 91, exp: 212 })] };
+    expect(() => upsertMonth(data, { y: 2026, m: 9, pv: 30, imp: 12, exp: 5 }, now)).toThrow(/unvollständig/);
   });
   it("ersetzt einen Monat und behält Batteriewerte, wenn keine mitkommen", () => {
     const data = { updated: "", months: [withDerived({ y: 2026, m: 9, pv: 400, imp: 90, exp: 200, battIn: 150, battOut: 110 })] };

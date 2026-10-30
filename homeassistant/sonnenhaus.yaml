@@ -1,31 +1,34 @@
-# Sonnenhaus: Home Assistant schickt jede Nacht die Monatswerte an GitHub.
+# Sonnenhaus: Home Assistant schickt am 1. jedes Monats die Werte des Vormonats an GitHub.
 # Die Verbindung geht nur von Home Assistant nach außen – Home Assistant bleibt aus dem Internet unerreichbar.
 #
-# Einrichten:
-# 1. Diese Datei als Paket einbinden, in configuration.yaml:
+# Einrichten (Anleitung ausführlich im README, Abschnitt „Home Assistant“):
+# 1. Diese Datei nach /config/packages/sonnenhaus.yaml kopieren und in configuration.yaml einmalig:
 #      homeassistant:
-#        packages:
-#          sonnenhaus: !include homeassistant/sonnenhaus.yaml   (oder Datei nach /config/packages/ legen)
-# 2. Unten die fünf Quell-Sensoren eintragen (die Gesamtzähler aus dem Energie-Dashboard, „total_increasing“, kWh).
-# 3. In secrets.yaml den GitHub-Zugang eintragen (fein-granularer Token, nur dieses Repository, Recht „Contents: Read and write“):
+#        packages: !include_dir_named packages
+# 2. Die fünf Quell-Sensoren sind eingetragen (SMA-Wechselrichter, Sunny Home Manager 2.0, Zendure SolarFlow 2400 AC).
+# 3. In secrets.yaml den GitHub-Zugang eintragen (fein-granularer Token, nur dieses Repository, „Contents: Read and write“):
 #      sonnenhaus_github_auth: "Bearer github_pat_…"
-# 4. Home Assistant neu starten, Automation einmal von Hand ausführen.
+# 4. Home Assistant neu starten. Der erste vollständige Monat ist der erste, der komplett nach dem Neustart liegt.
+#
+# So funktioniert es: Die Monatszähler (utility_meter) fangen am 1. um Mitternacht wieder bei 0 an und merken sich den
+# Endstand des Vormonats im Attribut „last_period“. Genau den schickt die Automation am 1. um 00:15 (und zur Sicherheit
+# noch einmal um 12:00 – doppelt senden schadet nicht, der Monat wird einfach überschrieben).
 
 utility_meter:
   sonnenhaus_pv_monat:
-    source: sensor.ERSETZEN_pv_erzeugung_gesamt
+    source: sensor.stp_10000tl_20_total_yield
     cycle: monthly
   sonnenhaus_bezug_monat:
-    source: sensor.ERSETZEN_netzbezug_gesamt
+    source: sensor.sunny_home_manager_2_metering_total_absorbed
     cycle: monthly
   sonnenhaus_einspeisung_monat:
-    source: sensor.ERSETZEN_netzeinspeisung_gesamt
+    source: sensor.sunny_home_manager_2_metering_total_yield
     cycle: monthly
   sonnenhaus_batterie_laden_monat:
-    source: sensor.ERSETZEN_zendure_geladen_gesamt
+    source: sensor.solarflow_2400_ac_aggr_charge
     cycle: monthly
   sonnenhaus_batterie_entladen_monat:
-    source: sensor.ERSETZEN_zendure_entladen_gesamt
+    source: sensor.solarflow_2400_ac_aggr_discharge
     cycle: monthly
 
 rest_command:
@@ -44,26 +47,57 @@ rest_command:
         "battIn": {{ batt_in }}, "battOut": {{ batt_out }} }}
 
 automation:
-  - id: sonnenhaus_monatswerte_senden
-    alias: "Sonnenhaus – Monatswerte an die Website schicken"
-    description: "Kurz vor Mitternacht den Stand des laufenden Monats senden; GitHub baut die Seite dann neu."
+  - id: sonnenhaus_vormonat_senden
+    alias: "Sonnenhaus – Vormonat an die Website schicken"
+    description: "Am 1. des Monats die Endstände des Vormonats an GitHub senden; GitHub baut die Seite dann neu."
+    mode: single
     triggers:
       - trigger: time
-        at: "23:58:00"
+        at: "00:15:00"
+      - trigger: time
+        at: "12:00:00"
     conditions:
-      # nur senden, wenn die Zähler einen Wert haben (nach Neustart kurz „unknown“)
       - condition: template
-        value_template: >
-          {{ states('sensor.sonnenhaus_pv_monat') | is_number
-             and states('sensor.sonnenhaus_bezug_monat') | is_number
-             and states('sensor.sonnenhaus_einspeisung_monat') | is_number }}
+        value_template: "{{ now().day == 1 }}"
     actions:
+      - variables:
+          vormonat: "{{ (now().replace(day=1) - timedelta(days=1)).strftime('%Y-%m') }}"
+          pv: "{{ state_attr('sensor.sonnenhaus_pv_monat', 'last_period') | float(0) | round(2) }}"
+          imp: "{{ state_attr('sensor.sonnenhaus_bezug_monat', 'last_period') | float(0) | round(2) }}"
+          exp: "{{ state_attr('sensor.sonnenhaus_einspeisung_monat', 'last_period') | float(0) | round(2) }}"
+          batt_in: "{{ state_attr('sensor.sonnenhaus_batterie_laden_monat', 'last_period') | float(0) | round(2) }}"
+          batt_out: "{{ state_attr('sensor.sonnenhaus_batterie_entladen_monat', 'last_period') | float(0) | round(2) }}"
+      # Frisch angelegte Zähler haben noch keinen Vormonat (alles 0) – dann nichts senden, nur Bescheid geben.
+      # Diese Prüfung steht bei den Aktionen, damit sie auch beim Testen von Hand („Ausführen“) greift.
+      - if:
+          - condition: template
+            value_template: "{{ pv | float(0) <= 0 }}"
+        then:
+          - action: persistent_notification.create
+            data:
+              title: "Sonnenhaus: noch kein Vormonat"
+              message: "Die Monatszähler haben noch keinen abgeschlossenen Monat. Das ist in den ersten Wochen nach dem Einrichten normal – gesendet wird ab dem nächsten Monatsersten."
+          - stop: "Noch kein Vormonat"
       - action: rest_command.sonnenhaus_push
+        continue_on_error: true
+        response_variable: antwort
         data:
-          year: "{{ now().year }}"
-          month: "{{ now().month }}"
-          pv: "{{ states('sensor.sonnenhaus_pv_monat') | float(0) | round(2) }}"
-          imp: "{{ states('sensor.sonnenhaus_bezug_monat') | float(0) | round(2) }}"
-          exp: "{{ states('sensor.sonnenhaus_einspeisung_monat') | float(0) | round(2) }}"
-          batt_in: "{{ states('sensor.sonnenhaus_batterie_laden_monat') | float(0) | round(2) }}"
-          batt_out: "{{ states('sensor.sonnenhaus_batterie_entladen_monat') | float(0) | round(2) }}"
+          year: "{{ vormonat[:4] | int }}"
+          month: "{{ vormonat[5:] | int }}"
+          pv: "{{ pv }}"
+          imp: "{{ imp }}"
+          exp: "{{ exp }}"
+          batt_in: "{{ batt_in }}"
+          batt_out: "{{ batt_out }}"
+      # GitHub antwortet bei Erfolg mit 204. Alles andere (Token abgelaufen, kein Internet …) als Hinweis anzeigen.
+      - if:
+          - condition: template
+            value_template: "{{ antwort is not defined or antwort.status != 204 }}"
+        then:
+          - action: persistent_notification.create
+            data:
+              title: "Sonnenhaus: Senden an GitHub hat nicht geklappt"
+              message: >-
+                Vormonat {{ vormonat }} wurde nicht übertragen
+                ({{ 'keine Antwort' if antwort is not defined else 'Status ' ~ antwort.status }}).
+                Häufigste Ursache: Der GitHub-Token ist abgelaufen. Um 12:00 gibt es noch einen Versuch.
