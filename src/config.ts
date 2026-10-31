@@ -38,6 +38,7 @@ export const DEFAULT_P: Prices = {
 };
 /** Besucherzähler (ohne Cookies), die Zahl zeigt die Startseite oben rechts */
 export const GOATCOUNTER = "https://andygeedot.goatcounter.com";
+export const GOATCOUNTER_START = "2026-10-30";   // Zähler läuft seit dem 31.10.2026
 
 export const TARIF: Record<number, string> = { 2026: "Green Planet Energy" };
 

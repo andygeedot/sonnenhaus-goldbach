@@ -8,7 +8,7 @@ import "@fontsource/nunito/700.css";
 import "@fontsource/nunito/800.css";
 import "./styles.css";
 
-import { GOATCOUNTER, REFS } from "./config";
+import { GOATCOUNTER, GOATCOUNTER_START, REFS } from "./config";
 import { ENERGY, YEARS, SHOW_Y, st, yearRows } from "./model";
 import { app, state } from "./state";
 import { $, f0, setAll } from "./ui";
@@ -38,10 +38,12 @@ function render() {
   syncUrl();
 }
 
-// Besuche laut GoatCounter; bleibt unsichtbar, solange keine Zahl kommt (Zähler aus, offline, Werbeblocker)
+// Besuche laut GoatCounter; bleibt unsichtbar, solange keine Zahl kommt (Zähler aus, offline, Werbeblocker).
+// GoatCounter speichert die Antwort bis zu 4 Stunden zwischen; mit Startdatum ist es ein eigener, frisch berechneter Eintrag
+// (ohne hing noch die 0 vom Einschalten des Zählers fest).
 async function showVisits() {
   try {
-    const r = await fetch(`${GOATCOUNTER}/counter/TOTAL.json`);
+    const r = await fetch(`${GOATCOUNTER}/counter/TOTAL.json?start=${GOATCOUNTER_START}`);
     if (!r.ok) return;
     const j = await r.json() as { count?: string; count_unique?: string };
     const n = parseInt(String(j.count ?? j.count_unique ?? "").replace(/\D/g, ""), 10);
