@@ -8,10 +8,10 @@ import "@fontsource/nunito/700.css";
 import "@fontsource/nunito/800.css";
 import "./styles.css";
 
-import { REFS } from "./config";
+import { GOATCOUNTER, REFS } from "./config";
 import { ENERGY, YEARS, SHOW_Y, st, yearRows } from "./model";
 import { app, state } from "./state";
-import { $, setAll } from "./ui";
+import { $, f0, setAll } from "./ui";
 import { initScene, renderScene, setupRange } from "./scene";
 import { initSections, renderBattery, renderCats, renderClimate, renderDots, renderMoney, renderMonths, renderPayback, renderYears } from "./sections";
 import { renderLexikon, renderQuiz, renderSettings } from "./content";
@@ -38,6 +38,19 @@ function render() {
   syncUrl();
 }
 
+// Besuche laut GoatCounter; bleibt unsichtbar, solange keine Zahl kommt (Zähler aus, offline, Werbeblocker)
+async function showVisits() {
+  try {
+    const r = await fetch(`${GOATCOUNTER}/counter/TOTAL.json`);
+    if (!r.ok) return;
+    const j = await r.json() as { count?: string; count_unique?: string };
+    const n = parseInt(String(j.count ?? j.count_unique ?? "").replace(/\D/g, ""), 10);
+    if (!n) return;
+    $("visitN").textContent = f0.format(n);
+    $("visits").hidden = false;
+  } catch { /* kein Zähler – kein Problem */ }
+}
+
 function start() {
   if (!ENERGY.months?.length) {
     $("main").innerHTML = `<div class="card loaderr"><h2>😕 Die Daten fehlen</h2>
@@ -47,6 +60,7 @@ function start() {
   app.render = render;
   readUrl();
   initScene(); initSections(); initNav();
+  showVisits();
   renderLexikon(); renderSettings();
   // erst zeichnen, wenn die Schriften da sind – sonst messen die Diagramme mit der falschen Schrift
   document.fonts.ready.then(render);

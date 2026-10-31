@@ -19,6 +19,8 @@
 <meta name="apple-mobile-web-app-title" content="Sonnenhaus">
 <script type="module" src="/src/main.ts"></script>
 <script type="module" src="/src/film/film.ts"></script>
+<!-- Besucherzähler: GoatCounter, ohne Cookies (siehe Datenschutz) -->
+<script data-goatcounter="https://andygeedot.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body>
 
@@ -30,9 +32,15 @@
 </section>
 
 <header class="wrap top" id="top">
+ <div class="tophead">
+  <div>
   <div class="kicker">Echte Messwerte seit 2019</div>
   <h1>Unser Sonnenhaus ☀️</h1>
   <p class="lead">So heizen, kühlen, kochen und radeln wir zu zweit auf 74 m² in Goldbach, und zwar nur mit Strom, ein großer Teil davon von unserem eigenen Dach.</p>
+  </div>
+  <!-- erscheint erst, wenn GoatCounter eine Zahl liefert -->
+  <div class="visits" id="visits" hidden><span class="vi" aria-hidden="true">👀</span><b id="visitN"></b><span class="vl">Besuche bisher</span></div>
+ </div>
 </header>
 
 <div class="sticky">

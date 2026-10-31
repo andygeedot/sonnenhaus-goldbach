@@ -36,6 +36,9 @@ export const DEFAULT_P: Prices = {
   2025: { strom: 39.7, base: 15.0, gas: 10.2, oil: 9.5, co2: 352 },
   2026: { strom: 30.5, base: 12.9, gas: 10.0, oil: 9.5, co2: 340 },
 };
+/** Besucherzähler (ohne Cookies), die Zahl zeigt die Startseite oben rechts */
+export const GOATCOUNTER = "https://andygeedot.goatcounter.com";
+
 export const TARIF: Record<number, string> = { 2026: "Green Planet Energy" };
 
 export const REFS: Record<RefKey, RefHouse> = {
