@@ -613,9 +613,16 @@ const press = (sel: string, fn: () => void) => {
 press("#startBtn", () => { closeGate(); });
 gsap.to("#startBtn .sb", { scale: 1.05, transformOrigin: "50% 50%", duration: .6, repeat: -1, yoyo: true, ease: "sine.inOut" });
 // „Zahlen & Diagramme“: auf der Startseite direkt darunter, sonst dorthin wechseln
-const toRead = () => {
-  if (root.classList.contains("fakefs")) toggleFullscreen();
+// Erst jedes Vollbild verlassen (echtes auf Android/Desktop, „Fast-Vollbild“ am iPhone) – im Vollbild gibt es nichts zu scrollen.
+// Danach kurz warten, bis die Seite wieder ihr normales Format hat (Handy dreht ggf. zurück), dann zu den Zahlen.
+const toRead = async () => {
   const target = document.getElementById("top");
+  if (isFs()) {
+    if (fsDoc.fullscreenElement ?? fsDoc.webkitFullscreenElement) {
+      try { await (fsDoc.exitFullscreen ? fsDoc.exitFullscreen() : fsDoc.webkitExitFullscreen?.()); } catch { /* war schon raus */ }
+    } else toggleFullscreen();
+    await new Promise(r => setTimeout(r, 450));
+  }
   if (target) target.scrollIntoView({ behavior: "smooth" }); else location.href = "index.html#top";
 };
 press("#readBtn", toRead);
