@@ -252,7 +252,7 @@
         <div class="share" id="cHeatS"></div>
         <p>Wir heizen mit einer <b>Luft-Luft-Wärmepumpe</b>, einer Klimaanlage von Mitsubishi (Diamond MSZ-LN25). Draußen holt sie Wärme aus der Luft, drinnen bläst sie warme Luft ins Zimmer. Aus <b>1 Teil Strom</b> macht sie etwa <b><span class="jaz"></span> Teile Wärme</b>. Im Sommer kann sie auch kühlen.</p>
         <p id="cHeatBefore" style="font-size:15px;background:var(--sun-soft);border-radius:12px;padding:8px 12px">2019 hatten wir die Klimaanlage noch nicht. Da heizten wir <b>direkt mit Strom</b>, und aus 1 Teil Strom wurde nur 1 Teil Wärme.</p>
-        <p class="muted" style="font-size:13.5px">Geschätzt, weil wir keinen eigenen Zähler dafür haben: alles, was wir in einem Monat mehr brauchen als im Sommer. Das entspricht etwa <b><span id="cHeatM2"></span> kWh Wärme pro m²</b> im Jahr.</p>
+        <p class="muted" style="font-size:13.5px"><span id="cHeatSrc"></span> Das entspricht etwa <b><span id="cHeatM2"></span> kWh Wärme pro m²</b> im Jahr.</p>
       </div>
       <div class="card cat" style="--c:var(--home)">
         <div class="icon">🚿</div>
@@ -332,7 +332,8 @@
     <div class="card">
       <div class="keys">
         <span class="line" style="--c:var(--sun)">Sonnenernte</span>
-        <span style="--c:var(--heat)">Heizen (geschätzt)</span>
+        <span style="--c:var(--heat)" id="mKeyHeat">Heizen (geschätzt)</span>
+        <span style="--c:var(--cool)" id="mKeyCool" hidden>Kühlen (gemessen)</span>
         <span style="--c:var(--home)">Haushalt, Warmwasser &amp; E-Bikes</span>
       </div>
       <div class="chartbox"><canvas id="cMonths" role="img" aria-label="Diagramm: Sonnenernte als Fläche und Verbrauch für Heizen und Haushalt als Säulen, je Monat"></canvas></div>
@@ -454,7 +455,7 @@
       <p class="muted" style="margin-top:10px">Erzeugung, Verbrauch, Netzbezug und Einspeisung sind <b>echte Monatswerte aus dem Sunny Portal</b> (Sunny Home Manager). Die Batteriewerte sind bis Oktober 2026 von Hand eingetragen, neue Monate schickt unser Home Assistant automatisch. Für 2026 gilt unser echter Tarif bei Green Planet Energy. Für 2019 bis 2025 rechnen wir mit groben deutschen Durchschnittspreisen. Wer die echten Rechnungen hat, kann die Werte hier ändern. Alles wird sofort neu berechnet.</p>
       <div class="settings" id="settings"></div>
       <div class="tablewrap"><table id="priceTable"></table></div>
-      <p class="muted" style="font-size:14px;margin-top:12px">Heizstrom ist geschätzt: Pro Jahr nehmen wir den durchschnittlichen Verbrauch von Juni bis August als „Grundverbrauch“, alles darüber zählt als Heizen. Weil die Klimaanlage im Sommer auch kühlt, ist der Heizstrom eher etwas unterschätzt. Wärme = Heizstrom × Jahresarbeitszahl, vor der Klimaanlage (2019) mit Faktor 1, weil wir direkt mit Strom geheizt haben. Vergleichshäuser: Gas mit Kessel-Wirkungsgrad und 0,201 kg CO₂/kWh, Heizöl mit 0,266 kg CO₂/kWh, Strom mit dem deutschen Strommix des Jahres. Abgegebener Sonnenstrom ersetzt Strom aus dem Mix. Die Herstellung der Anlagen ist nicht eingerechnet. Ein Baum nimmt etwa <span id="aTree"></span> kg CO₂ pro Jahr auf, ein Auto stößt etwa 150 g pro km aus.</p>
+      <p class="muted" style="font-size:14px;margin-top:12px">Heizstrom bis Oktober 2026 ist geschätzt: Pro Jahr nehmen wir den durchschnittlichen Verbrauch von Juni bis August als „Grundverbrauch“, alles darüber zählt als Heizen. Seit November 2026 messen wir ihn mit einem Zwischenstecker an der Klimaanlage, getrennt nach Heizen und Kühlen (Standby zählt zum zuletzt genutzten Modus). Kühlen geht nicht in die Vergleiche mit Gas, Öl oder Wärmepumpe ein. Wärme = Heizstrom × Jahresarbeitszahl, vor der Klimaanlage (2019) mit Faktor 1, weil wir direkt mit Strom geheizt haben. Vergleichshäuser: Gas mit Kessel-Wirkungsgrad und 0,201 kg CO₂/kWh, Heizöl mit 0,266 kg CO₂/kWh, Strom mit dem deutschen Strommix des Jahres. Abgegebener Sonnenstrom ersetzt Strom aus dem Mix. Die Herstellung der Anlagen ist nicht eingerechnet. Ein Baum nimmt etwa <span id="aTree"></span> kg CO₂ pro Jahr auf, ein Auto stößt etwa 150 g pro km aus.</p>
     </details>
   </section>
 </main>

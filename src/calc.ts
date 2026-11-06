@@ -5,11 +5,12 @@ import type { Model, Month, RawMonth, RefKey, RefTotals, Stats, YM } from "./typ
 export const after = (r: YM, f: YM) => r.y > f.y || (r.y === f.y && r.m >= f.m);
 
 /**
- * Bereitet die Rohdaten auf. Heizstrom wird geschätzt, weil es keinen eigenen Zähler gibt:
- * alles, was ein Monat über dem Sommerverbrauch (Juni–August) desselben Jahres liegt.
+ * Bereitet die Rohdaten auf. Seit Nov. 2026 misst ein Zähler an der Klimaanlage Heizen und Kühlen getrennt.
+ * Für die Monate davor wird Heizstrom geschätzt: alles, was ein Monat über dem Sommerverbrauch (Juni–August) desselben Jahres liegt.
  */
 export function prepare(raw: RawMonth[]) {
-  const data: Month[] = raw.map(r => ({ ...r, battIn: r.battIn ?? 0, battOut: r.battOut ?? 0, fromRoof: r.direct - (r.battIn ?? 0), heat: 0, home: 0 }));
+  const data: Month[] = raw.map(r => ({ ...r, battIn: r.battIn ?? 0, battOut: r.battOut ?? 0, fromRoof: r.direct - (r.battIn ?? 0),
+    heat: r.heat ?? 0, cool: r.heat != null ? r.cool ?? 0 : 0, home: 0, heatMeasured: r.heat != null }));
   const summerBase = (y: number) => {
     const s = data.filter(r => r.y === y && r.m >= 5 && r.m <= 7);
     return s.length ? s.reduce((a, r) => a + r.cons, 0) / s.length : null;
@@ -17,8 +18,8 @@ export function prepare(raw: RawMonth[]) {
   const base: Record<number, number> = {};
   for (const r of data) {
     if (!(r.y in base)) base[r.y] = summerBase(r.y) ?? summerBase(r.y - 1) ?? 0;
-    r.heat = Math.max(0, r.cons - base[r.y]);
-    r.home = r.cons - r.heat;
+    if (!r.heatMeasured) r.heat = Math.max(0, r.cons - base[r.y]);
+    r.home = Math.max(0, r.cons - r.heat - r.cool);
   }
   const years = [...new Set(data.map(r => r.y))];
   const fullYears = years.filter(y => data.filter(r => r.y === y).length === 12);
@@ -80,7 +81,7 @@ export function refMonth(M: Model, r: Month, key: RefKey): RefTotals {
   return { heat, ww, fuel, home, elec, heatCost, heatCO2, elecCost, cost: heatCost + elecCost, co2: heatCO2 + home * p.co2 / 1000 };
 }
 
-const SUM_KEYS = ["pv", "cons", "imp", "exp", "direct", "battIn", "battOut", "fromRoof", "heat", "home"] as const;
+const SUM_KEYS = ["pv", "cons", "imp", "exp", "direct", "battIn", "battOut", "fromRoof", "heat", "cool", "home"] as const;
 
 /** Summen, Kosten, CO₂ und Ersparnisse für beliebige Monate (ein Monat, ein Jahr, alles). */
 export function stats(M: Model, rows: Month[], refKey: RefKey): Stats {
@@ -106,7 +107,7 @@ export function stats(M: Model, rows: Month[], refKey: RefKey): Stats {
     co2Exp += r.exp * p.co2 / 1000;
   }
   return {
-    n: rows.length, months: rows, y: rows[0]?.y, ...sum,
+    n: rows.length, months: rows, y: rows[0]?.y, ...sum, measuredN: rows.filter(r => r.heatMeasured).length,
     autarky: sum.direct / sum.cons, heatUseful,
     ourCost, ourCO2, solarGain, battGain, acGain, acRunVsHp, pvGain: solarGain - battGain,
     ref, saved: ref.cost - ourCost,

@@ -12,11 +12,18 @@ Chart.register(...registerables);
 // ---------- Verbrauch ----------
 export function renderCats(s: Stats) {
   const A = M.A;
-  $("split").innerHTML = ([["heat", "var(--heat)"], ["home", "var(--home)"]] as const)
-    .map(([k, c]) => `<div style="flex:${s[k]};background:${c}" title="${f0.format(s[k])} kWh"></div>`).join("");
-  count($("cHeat"), s.heat); count($("cHome"), s.home);
+  const ac = s.heat + s.cool;   // die Karte heißt „Heizen (und Kühlen)“
+  $("split").innerHTML = ([[ac, "var(--heat)"], [s.home, "var(--home)"]] as const)
+    .map(([v, c]) => `<div style="flex:${v};background:${c}" title="${f0.format(v)} kWh"></div>`).join("");
+  count($("cHeat"), ac); count($("cHome"), s.home);
   const pct = (v: number) => `${f0.format(v / s.cons * 100)} % von allem`;
-  $("cHeatS").textContent = pct(s.heat); $("cHomeS").textContent = pct(s.home);
+  $("cHeatS").textContent = pct(ac) + (s.cool > 0.5 ? ` · davon ${f0.format(s.cool)} kWh Kühlen` : "");
+  $("cHomeS").textContent = pct(s.home);
+  const since = DATA.find(r => r.heatMeasured), sinceTxt = since ? `seit ${MONL[since.m]} ${since.y}` : "";
+  const estTxt = "alles, was wir in einem Monat mehr brauchen als im Sommer.";
+  $("cHeatSrc").textContent = s.measuredN === 0 ? `Geschätzt, weil wir dafür noch keinen eigenen Zähler hatten: ${estTxt}`
+    : s.measuredN === s.n ? `Gemessen mit einem Zwischenstecker an der Klimaanlage (${sinceTxt}), getrennt nach Heizen und Kühlen.`
+    : `${s.measuredN} von ${s.n} Monaten gemessen (Zwischenstecker an der Klimaanlage, ${sinceTxt}), die anderen geschätzt: ${estTxt}`;
   $("cHomeDay").textContent = f1.format(s.home / (s.n * 30.4));
   $("cHomePP").textContent = f0.format(s.home / HOUSE.people * 12 / s.n);
   $("cBikeCt").textContent = f0.format(100 * A.bikeKwhPerKm * M.P[s.y].strom);
@@ -177,12 +184,19 @@ export function renderMonths(s: Stats) {
   o.scales.y.ticks.callback = (v: number) => f0.format(v) + " kWh";
   o.plugins.tooltip.callbacks = { label: (c: any) => ` ${c.dataset.label}: ${f0.format(c.raw)} kWh` };
   const full = MON.map((_, m) => s.months.find(r => r.m === m));
-  const v = (k: "pv" | "heat" | "home") => full.map(r => r ? r[k] : null);
-  const sun = css("--sun");
+  const v = (k: "pv" | "heat" | "cool" | "home") => full.map(r => r ? r[k] : null);
+  const sun = css("--sun"), heat = css("--heat");
+  // Gemessene Heizmonate kräftig, geschätzte blasser – aber nur, wenn das Jahr beides hat
+  const mixed = s.measuredN > 0 && s.measuredN < s.n, hasCool = s.cool > 0.5;
+  const kind = (r?: Month) => r?.heatMeasured ? "gemessen" : "geschätzt";
+  $("mKeyHeat").textContent = s.measuredN === 0 ? "Heizen (geschätzt)" : s.measuredN === s.n ? "Heizen (gemessen)" : "Heizen (kräftig = gemessen, blass = geschätzt)";
+  $("mKeyCool").hidden = !hasCool;
+  o.plugins.tooltip.callbacks.label = (c: any) => ` ${c.dataset.label}${c.dataset.stack === "use" && c.datasetIndex === 1 ? ` (${kind(full[c.dataIndex])})` : ""}: ${f0.format(c.raw)} kWh`;
   draw("cMonths", {
     data: { labels: MON, datasets: [
       { type: "line", label: "☀️ Sonnenernte", data: v("pv"), borderColor: sun, backgroundColor: sun + "40", fill: true, tension: 0.4, borderWidth: 4, pointRadius: 0, pointHoverRadius: 6, stack: "pv", order: 0 },
-      { type: "bar", label: "🌡️ Heizen (geschätzt)", data: v("heat"), backgroundColor: css("--heat"), borderRadius: 6, stack: "use", order: 1 },
+      { type: "bar", label: "🌡️ Heizen", data: v("heat"), backgroundColor: full.map(r => mixed && !r?.heatMeasured ? heat + "73" : heat), borderRadius: 6, stack: "use", order: 1 },
+      ...(hasCool ? [{ type: "bar", label: "❄️ Kühlen (gemessen)", data: v("cool"), backgroundColor: css("--cool"), borderRadius: 6, stack: "use", order: 1 }] : []),
       { type: "bar", label: "🚿 Haushalt & Co.", data: v("home"), backgroundColor: css("--home"), borderRadius: 6, stack: "use", order: 1 },
     ] },
     options: o,

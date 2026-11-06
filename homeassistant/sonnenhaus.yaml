@@ -6,6 +6,7 @@
 #      homeassistant:
 #        packages: !include_dir_named packages
 # 2. Die fünf Quell-Sensoren sind eingetragen (SMA-Wechselrichter, Sunny Home Manager 2.0, Zendure SolarFlow 2400 AC).
+#    Heizen/Kühlen der Klimaanlage kommen aus dem Paket klima_modus.yaml (sensor.klima_heizen_monat, sensor.klima_kuhlen_monat).
 # 3. In secrets.yaml den GitHub-Zugang eintragen (fein-granularer Token, nur dieses Repository, „Contents: Read and write“):
 #      sonnenhaus_github_auth: "Bearer github_pat_…"
 # 4. Home Assistant neu starten. Der erste vollständige Monat ist der erste, der komplett nach dem Neustart liegt.
@@ -55,7 +56,8 @@ rest_command:
       {"event_type": "energy-month", "client_payload": {
         "year": {{ year }}, "month": {{ month }},
         "pv": {{ pv }}, "imp": {{ imp }}, "exp": {{ exp }},
-        "battIn": {{ batt_in }}, "battOut": {{ batt_out }} }}
+        "battIn": {{ batt_in }}, "battOut": {{ batt_out }},
+        "heat": {{ heat }}, "cool": {{ cool }} }}
 
 automation:
   - id: sonnenhaus_vormonat_senden
@@ -78,6 +80,9 @@ automation:
           exp: "{{ state_attr('sensor.sonnenhaus_einspeisung_monat', 'last_period') | float(0) | round(2) }}"
           batt_in: "{{ state_attr('sensor.sonnenhaus_batterie_laden_monat', 'last_period') | float(0) | round(2) }}"
           batt_out: "{{ state_attr('sensor.sonnenhaus_batterie_entladen_monat', 'last_period') | float(0) | round(2) }}"
+          # Klimaanlage getrennt nach Heizen und Kühlen (Paket klima_modus.yaml; HA schreibt „kuhlen“ ohne ü)
+          heat: "{{ state_attr('sensor.klima_heizen_monat', 'last_period') | float(0) | round(2) }}"
+          cool: "{{ state_attr('sensor.klima_kuhlen_monat', 'last_period') | float(0) | round(2) }}"
       # Frisch angelegte Zähler haben noch keinen Vormonat (alles 0) – dann nichts senden, nur Bescheid geben.
       # Diese Prüfung steht bei den Aktionen, damit sie auch beim Testen von Hand („Ausführen“) greift.
       - if:
@@ -100,6 +105,8 @@ automation:
           exp: "{{ exp }}"
           batt_in: "{{ batt_in }}"
           batt_out: "{{ batt_out }}"
+          heat: "{{ heat }}"
+          cool: "{{ cool }}"
       # GitHub antwortet bei Erfolg mit 204. Alles andere (Token abgelaufen, kein Internet …) als Hinweis anzeigen.
       - if:
           - condition: template

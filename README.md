@@ -93,6 +93,8 @@ Gibt es für die Batterie nur Leistung (W) statt Energie (kWh): *Einstellungen �
 - Am 1. November würde der angebrochene Oktober gesendet – GitHub lehnt ihn ab, weil der Oktober aus dem Sunny Portal schon mit viel größeren Werten drin ist. Das ist gewollt; der Lauf auf GitHub wird dann rot und GitHub schickt eine E-Mail, die man ignorieren kann.
 - Klappt das Senden nicht (z. B. Token abgelaufen), erscheint in Home Assistant eine Benachrichtigung.
 
+**Klimaanlage (Heizen und Kühlen, seit November 2026).** Ein Shelly-Zwischenstecker misst die Klimaanlage. Das Paket `klima_modus.yaml` (im Repo `homeassistant-dashboard`) teilt das auf `sensor.klima_heizen_monat` und `sensor.klima_kuhlen_monat` auf. Die Automation schickt beides als `heat` und `cool` mit. Wo diese Werte in `data/energy.json` stehen, zeigt die Seite den gemessenen Heizstrom statt der Schätzung. Kühlen zählt nicht in die Vergleiche mit Gas, Öl oder Wärmepumpe. Was der Zähler verpasst hat (1.–4.11.2026, aus dem Mitsubishi-Zähler × 1,08), steht als `HEAT_TOPUP` in `scripts/energy-data.mjs` und wird beim Übernehmen dazugezählt.
+
 **7. Testen.** Unter *Einstellungen → Automationen* „Sonnenhaus – Vormonat an die Website schicken“ öffnen, *⋮ → Ausführen*. In den ersten Wochen kommt nur der Hinweis „noch kein Vormonat“ – das ist richtig so. Ab dem ersten Monatswechsel sendet der Test den Vormonat; im Repo unter *Actions* startet dann ein Lauf und `data/energy.json` bekommt den Commit „Monatswerte aus Home Assistant“.
 
 ## Schaufenster: der Film

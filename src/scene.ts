@@ -14,6 +14,7 @@ function info(k: string, s: Stats): Info | undefined {
   const p = M.P[state.y], A = M.A, per = state.pm == null ? `im Jahr ${state.y}` : `im ${MONL[state.pm]}`;
   const perDay = (v: number) => f1.format(v / (s.n * 30.4));
   const hasBatt = s.battIn > 0;
+  const heatKind = s.measuredN === 0 ? "geschätzt" : s.measuredN === s.n ? "gemessen" : "teils gemessen";
   const winter = state.pm != null && [10, 11, 0].includes(state.pm), summer = state.pm != null && [4, 5, 6].includes(state.pm);
   const T: Record<string, Info> = {
     sun: { ic: "☀️", c: "var(--sun)", t: "Die Sonne",
@@ -29,10 +30,10 @@ function info(k: string, s: Stats): Info | undefined {
     ac: state.y < AC_FROM.y
       ? { ic: "❄️", c: "var(--heat)", t: "Klimaanlage? Noch nicht!",
           x: "Die Klimaanlage kam erst 2020. Davor heizten wir direkt mit Strom: Da wird aus 1 kWh Strom genau 1 kWh Wärme, wie bei einem Heizlüfter. Die Klimaanlage schafft heute etwa viermal so viel Wärme mit derselben Menge Strom.",
-          f: [["Heizstrom " + per + " (geschätzt)", f0.format(s.heat) + " kWh"]] }
+          f: [["Heizstrom " + per + " (" + heatKind + ")", f0.format(s.heat) + " kWh"]] }
       : { ic: "❄️", c: "var(--heat)", t: "Klimaanlage = Wärmepumpe",
           x: `Unsere Mitsubishi Diamond MSZ-LN25 ist eine Luft-Luft-Wärmepumpe: Draußen holt sie Wärme aus der Luft (sogar bei Frost!), drinnen bläst sie warme Luft ins Zimmer. Aus 1 kWh Strom macht sie etwa ${f1.format(A.jaz)} kWh Wärme. Früher, mit Strom-Heizgeräten, war es nur 1 kWh. Im Sommer kühlt sie.`,
-          f: [["Heizstrom " + per + " (geschätzt)", f0.format(s.heat) + " kWh"], ["daraus Wärme", "≈ " + f0.format(s.heatUseful) + " kWh"], ["gespart ggü. Strom-Heizung", eur(s.acGain)]] },
+          f: [["Heizstrom " + per + " (" + heatKind + ")", f0.format(s.heat) + " kWh"], ...(s.cool > 0.5 ? [["Kühlen", f0.format(s.cool) + " kWh"] as [string, string]] : []), ["daraus Wärme", "≈ " + f0.format(s.heatUseful) + " kWh"], ["gespart ggü. Strom-Heizung", eur(s.acGain)]] },
     house: { ic: "🏠", c: "var(--home)", t: "Unser Haus in Goldbach",
       x: "74 m², in denen alles mit Strom läuft: Heizung, warmes Wasser (Durchlauferhitzer), Kochen, Licht, Computer und die E-Bikes. Tipp: Tippe auch auf die anderen Dinge im Bild!",
       f: [["Verbrauch " + per, f0.format(s.cons) + " kWh"], ["pro Tag", perDay(s.cons) + " kWh"], ["vom eigenen Dach", f0.format(s.autarky * 100) + " %"]] },

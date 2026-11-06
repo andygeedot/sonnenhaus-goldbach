@@ -1,7 +1,7 @@
   :root {
     --bg: #fff8ee; --card: #ffffff; --text: #24303a; --muted: #66717c; --line: #f0e4d2;
     --sun: #f2b233; --sun-soft: #fdf0cf; --battery: #2bb3a6; --grid: #8f99a8;
-    --heat: #ec7a45; --home: #4c9be0; --bike: #8b6fd6; --leaf: #3fa36b; --leaf-soft: #e3f4e8;
+    --heat: #ec7a45; --cool: #5fb8e6; --home: #4c9be0; --bike: #8b6fd6; --leaf: #3fa36b; --leaf-soft: #e3f4e8;
     --sky1: #cfe8fb; --sky2: #fff3dc; --grass: #9bd38a; --house: #fffdf8; --roof: #c9644a;
     --panel: #2f4f7a; --window: #ffd977; --device: #e9eef3; --stroke: #5b6773;
     --chip: #ffffff; --chip-on: #24303a; --chip-on-text: #ffffff;

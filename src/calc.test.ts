@@ -24,6 +24,15 @@ describe("prepare", () => {
     expect(p.data[6].heat).toBe(0);
     expect(p.data[0].home).toBe(200);
   });
+  it("nimmt gemessenen Heizstrom statt der Schätzung, Kühlen getrennt", () => {
+    const raw = year(2026);
+    raw[10] = { ...raw[10], heat: 120, cool: 0 };
+    raw[6] = { ...raw[6], heat: 5, cool: 30 };
+    const { data } = prepare(raw);
+    expect(data[10]).toMatchObject({ heat: 120, cool: 0, home: 260, heatMeasured: true });
+    expect(data[6]).toMatchObject({ heat: 5, cool: 30, home: 165 });
+    expect(data[0]).toMatchObject({ heat: 300, cool: 0, heatMeasured: false });
+  });
   it("verteilt die Monatsanteile auf genau 1", () => {
     const { shape } = prepare(year(2025));
     expect(shape.reduce((a, b) => a + b, 0)).toBeCloseTo(1, 10);

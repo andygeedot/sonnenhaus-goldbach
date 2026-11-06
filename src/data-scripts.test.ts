@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 // @ts-expect-error – reines JavaScript ohne Typen
-import { parseNum, parseSunnyPortalCsv, parseBatteryCsv, upsertMonth, validatePayload, withDerived } from "../scripts/energy-data.mjs";
+import { parseNum, parseSunnyPortalCsv, parseBatteryCsv, upsertMonth, validatePayload, withDerived, withHeatTopup } from "../scripts/energy-data.mjs";
 
 const CSV = `﻿sep=;
 "Version";"4";;;;
@@ -59,6 +59,23 @@ describe("Monatswerte von Home Assistant", () => {
     expect(out.months).toHaveLength(1);
     expect(out.months[0]).toMatchObject({ pv: 470, battIn: 150, battOut: 110, cons: 349 });
     expect(out.updated).toBe("2026-11-15");
+  });
+  it("nimmt Heizen und Kühlen der Klimaanlage an", () => {
+    expect(validatePayload({ ...ok, heat: 85.4, cool: 0 }, now)).toMatchObject({ heat: 85.4, cool: 0 });
+    expect(() => validatePayload({ ...ok, heat: 400, cool: 100 }, now)).toThrow(/ganze Verbrauch/);
+    expect(() => validatePayload({ ...ok, cool: 5 }, now)).toThrow(/ohne/);
+    expect(() => validatePayload({ ...ok, heat: -1 }, now)).toThrow();
+  });
+  it("zählt den Nachtrag für den 1.–4.11.2026 dazu, sonst nichts", () => {
+    expect(withHeatTopup({ y: 2026, m: 10, heat: 80 }).heat).toBe(82.92);
+    expect(withHeatTopup({ y: 2026, m: 11, heat: 80 }).heat).toBe(80);
+    expect(withHeatTopup({ y: 2026, m: 10 }).heat).toBeUndefined();
+  });
+  it("behält Klimawerte und einen deutlich größeren Heizwert", () => {
+    const data = { updated: "", months: [withDerived({ y: 2026, m: 10, pv: 180, imp: 300, exp: 40, heat: 90, cool: 0 })] };
+    expect(upsertMonth(data, { y: 2026, m: 10, pv: 181, imp: 300, exp: 40 }, now).months[0]).toMatchObject({ heat: 90, cool: 0 });
+    expect(upsertMonth(data, { y: 2026, m: 10, pv: 181, imp: 300, exp: 40, heat: 20, cool: 0 }, now).months[0].heat).toBe(90);
+    expect(upsertMonth(data, { y: 2026, m: 10, pv: 181, imp: 300, exp: 40, heat: 95, cool: 1 }, now).months[0]).toMatchObject({ heat: 95, cool: 1 });
   });
   it("fügt neue Monate sortiert ein", () => {
     const data = { updated: "", months: [withDerived({ y: 2026, m: 9, pv: 1, imp: 1, exp: 0 })] };
